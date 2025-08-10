@@ -2,7 +2,6 @@
 
 import { Textarea } from '@/components/ui/textarea';
 import { MafiaSealIcon } from '@/components/icons';
-import { ImageUploader } from '@/components/ui/image-uploader';
 
 export default function NotesPage() {
   const dotGridStyle = {
@@ -32,8 +31,6 @@ export default function NotesPage() {
         </div>
         <div className="space-y-4">
            <h2 className="font-headline text-2xl font-bold text-primary">Mood Board</h2>
-           <ImageUploader dataAiHint="vintage book" />
-           <ImageUploader dataAiHint="architectural blueprint" />
         </div>
       </div>
     </div>

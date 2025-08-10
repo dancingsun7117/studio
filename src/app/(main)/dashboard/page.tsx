@@ -6,7 +6,6 @@ import { Star, GlassWater, Apple, Dumbbell, BookOpen, Sparkles, Smile, Heart, Pl
 import { useQuote } from '@/context/QuoteContext';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { ImageUploader } from '@/components/ui/image-uploader';
 
 const initialReminders = [
     { id: 1, icon: GlassWater, text: "Drink Water", color: "text-blue-400" },
@@ -73,7 +72,11 @@ export default function DashboardPage() {
             </p>
           </CardContent>
         </Card>
-        <ImageUploader defaultImage="https://placehold.co/600x400.png" dataAiHint="moody landscape" />
+        <Card>
+            <CardContent className="p-2 aspect-video flex items-center justify-center relative group bg-muted/20">
+                <p className="text-muted-foreground">Vision Board</p>
+            </CardContent>
+        </Card>
       </div>
 
       <div>
