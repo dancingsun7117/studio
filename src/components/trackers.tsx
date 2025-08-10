@@ -75,7 +75,7 @@ const initialPlacementPrep = [
 ];
 
 const initialHealthData = {
-    water: 4, // in glasses
+    water: 8, // in glasses
     workouts: [
         { activity: 'HIIT', duration: '30 min', date: '2025-07-21' }
     ],
@@ -84,7 +84,8 @@ const initialHealthData = {
         { text: 'Skincare Routine', done: true },
         { text: 'Floss', done: true },
         { text: 'Tidy up room', done: false }
-    ]
+    ],
+    workoutSessions: 1
 };
 
 const TRACKERS_STORAGE_KEY_PREFIX = 'trackers_v1_';
@@ -307,9 +308,12 @@ export function TrackersView() {
     };
 
     // State for Health Tracker
-    const handleWaterChange = (value: number[]) => setHealthData({...healthData, water: value[0]});
-    const handleSleepChange = (value: number[]) => setHealthData({...healthData, sleep: value[0]});
-    
+    const handleHealthDataChange = (field: keyof typeof healthData, value: number) => {
+        if (!isNaN(value)) {
+            setHealthData(prev => ({...prev, [field]: value}));
+        }
+    };
+
     const addWorkout = () => {
         if (newWorkout.activity.trim() && newWorkout.duration.trim() && newWorkout.date.trim()) {
             setHealthData({...healthData, workouts: [newWorkout, ...healthData.workouts]});
@@ -460,39 +464,36 @@ export function TrackersView() {
                 <TabsContent value="health" className="mt-0">
                     <Card className="h-full">
                         <CardHeader>
-                            <CardTitle className="font-headline text-2xl text-primary">Health, Fitness & Hygiene</CardTitle>
+                            <CardTitle className="font-headline text-2xl text-primary">Health, Fitness &amp; Hygiene</CardTitle>
                             <CardDescription>A healthy mind in a healthy body. Track your wellness metrics.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-6">
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <Card>
                                     <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                                        <CardTitle className="text-sm font-medium">Water Intake</CardTitle>
+                                        <CardTitle className="text-sm font-medium">Water Intake (glasses)</CardTitle>
                                         <GlassWater className="h-4 w-4 text-muted-foreground" />
                                     </CardHeader>
-                                    <CardContent className="flex flex-col items-center justify-center space-y-2 pt-6">
-                                        <div className="text-2xl font-bold">{healthData.water} glasses</div>
-                                        <Slider value={[healthData.water]} onValueChange={handleWaterChange} max={16} step={1} className="w-3/4" />
+                                    <CardContent>
+                                        <Input type="number" value={healthData.water} onChange={e => handleHealthDataChange('water', parseInt(e.target.value))} className="text-2xl font-bold h-auto border-none p-0 focus-visible:ring-0" />
                                     </CardContent>
                                 </Card>
                                 <Card>
                                     <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                                        <CardTitle className="text-sm font-medium">Sleep</CardTitle>
+                                        <CardTitle className="text-sm font-medium">Sleep (hours)</CardTitle>
                                         <Bed className="h-4 w-4 text-muted-foreground" />
                                     </CardHeader>
-                                    <CardContent className="flex flex-col items-center justify-center space-y-2 pt-6">
-                                        <div className="text-2xl font-bold">{healthData.sleep.toFixed(1)} hours</div>
-                                        <Slider value={[healthData.sleep]} onValueChange={handleSleepChange} max={12} step={0.5} className="w-3/4" />
+                                    <CardContent>
+                                         <Input type="number" value={healthData.sleep} onChange={e => handleHealthDataChange('sleep', parseFloat(e.target.value))} className="text-2xl font-bold h-auto border-none p-0 focus-visible:ring-0" />
                                     </CardContent>
                                 </Card>
                                 <Card>
                                     <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                                        <CardTitle className="text-sm font-medium">Workouts</CardTitle>
+                                        <CardTitle className="text-sm font-medium">Workouts (sessions)</CardTitle>
                                         <Dumbbell className="h-4 w-4 text-muted-foreground" />
                                     </CardHeader>
-                                    <CardContent className="flex flex-col items-center justify-center space-y-1 pt-6">
-                                        <div className="text-2xl font-bold">{healthData.workouts.length}</div>
-                                        <p className="text-xs text-muted-foreground">sessions this week</p>
+                                    <CardContent>
+                                        <Input type="number" value={healthData.workoutSessions} onChange={e => handleHealthDataChange('workoutSessions', parseInt(e.target.value))} className="text-2xl font-bold h-auto border-none p-0 focus-visible:ring-0" />
                                     </CardContent>
                                 </Card>
                             </div>
@@ -506,9 +507,9 @@ export function TrackersView() {
                                                 <Input placeholder="Activity" value={newWorkout.activity} onChange={e => setNewWorkout({...newWorkout, activity: e.target.value})} className="flex-grow" />
                                                 <Input placeholder="Duration" className="w-full sm:w-28" value={newWorkout.duration} onChange={e => setNewWorkout({...newWorkout, duration: e.target.value})} />
                                                 <Input type="date" className="w-full sm:w-40" value={newWorkout.date} onChange={e => setNewWorkout({...newWorkout, date: e.target.value})} />
-                                                <Button onClick={addWorkout} size="icon" className="w-full sm:w-10"><PlusCircle className="h-4 w-4" /></Button>
+                                                <Button onClick={addWorkout} size="icon" className="w-full sm:w-10 flex-shrink-0"><PlusCircle className="h-4 w-4" /></Button>
                                             </div>
-                                            <div className="max-h-40 overflow-y-auto space-y-2 pr-2">
+                                            <div className="max-h-32 overflow-y-auto space-y-2 pr-2">
                                                 {healthData.workouts.map((w, i) => (
                                                     <div key={i} className="flex items-center gap-2 p-2 rounded-md bg-secondary/10 text-sm">
                                                         <span className="font-semibold flex-1 truncate">{w.activity}</span>
@@ -522,14 +523,14 @@ export function TrackersView() {
                                     </Card>
                                 </div>
                                 <div className="space-y-4">
-                                    <h3 className="font-headline text-lg text-accent">Hygiene & Self-Care</h3>
+                                    <h3 className="font-headline text-lg text-accent">Hygiene &amp; Self-Care</h3>
                                     <Card>
                                         <CardContent className="p-4 space-y-4">
                                             <div className="flex gap-2">
                                                 <Input placeholder="New task..." value={newHygieneItem} onChange={e => setNewHygieneItem(e.target.value)} />
                                                 <Button onClick={addHygieneItem} size="icon"><PlusCircle className="h-4 w-4" /></Button>
                                             </div>
-                                            <div className="max-h-40 overflow-y-auto space-y-2 pr-2">
+                                            <div className="max-h-32 overflow-y-auto space-y-2 pr-2">
                                                 {healthData.hygiene.map((h, i) => (
                                                     <div key={i} className="flex items-center gap-3 group">
                                                         <Checkbox id={`hygiene-${i}`} checked={h.done} onCheckedChange={() => toggleHygiene(i)}/>
@@ -785,3 +786,5 @@ export function TrackersView() {
         </Tabs>
     );
 }
+
+    
