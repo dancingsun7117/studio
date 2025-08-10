@@ -87,77 +87,60 @@ const initialHealthData = {
     workoutSessions: 1
 };
 
-const TRACKERS_STORAGE_KEY_PREFIX = 'trackers_v1_';
+const TRACKERS_STORAGE_KEY_PREFIX = 'trackers_v2_';
 
-export function TrackersView() {
-    const [habits, setHabits] = useState(initialHabits);
-    const [newHabit, setNewHabit] = useState('');
-    
-    const [goals, setGoals] = useState(initialGoals);
-    const [newGoal, setNewGoal] = useState({text: '', category: 'Academic'});
-    
-    const [healthData, setHealthData] = useState(initialHealthData);
-    const [newWorkout, setNewWorkout] = useState({ activity: '', duration: '', date: ''});
-    const [newHygieneItem, setNewHygieneItem] = useState('');
-
-    const [semesters, setSemesters] = useState(initialSemesters);
-    const [cgpa, setCgpa] = useState({current: '8.5', goal: '9.0'});
-    
-    const [skills, setSkills] = useState(initialSkills);
-    const [newSkill, setNewSkill] = useState({name: '', value: 50});
-    
-    const [transactions, setTransactions] = useState(initialTransactions);
-    const [newTransaction, setNewTransaction] = useState({ description: '', amount: '', type: 'expense' as const });
-    
-    const [experience, setExperience] = useState(initialExperience);
-    
-    const [involvement, setInvolvement] = useState(initialInvolvement);
-    
-    const [placementPrep, setPlacementPrep] = useState(initialPlacementPrep);
-    const [newPrepItem, setNewPrepItem] = useState('');
-
-    const stateMap: Record<string, [any, React.Dispatch<any>]> = {
-        habits: [habits, setHabits],
-        goals: [goals, setGoals],
-        health: [healthData, setHealthData],
-        cgpaState: [{semesters, cgpa}, (val: any) => { setSemesters(val.semesters); setCgpa(val.cgpa); }],
-        skills: [skills, setSkills],
-        finance: [transactions, setTransactions],
-        experience: [experience, setExperience],
-        events: [involvement, setInvolvement],
-        placement: [placementPrep, setPlacementPrep]
-    };
-
-    useEffect(() => {
-        Object.keys(stateMap).forEach(key => {
-            try {
-                const savedState = localStorage.getItem(`${TRACKERS_STORAGE_KEY_PREFIX}${key}`);
-                if (savedState) {
-                    stateMap[key][1](JSON.parse(savedState));
-                }
-            } catch (error) {
-                console.error(`Failed to parse ${key} from localStorage`, error);
-            }
-        });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+function useTrackerState<T>(key: string, initialState: T): [T, React.Dispatch<React.SetStateAction<T>>] {
+    const [state, setState] = useState<T>(() => {
+        if (typeof window === 'undefined') {
+            return initialState;
+        }
+        try {
+            const savedState = localStorage.getItem(`${TRACKERS_STORAGE_KEY_PREFIX}${key}`);
+            return savedState ? JSON.parse(savedState) : initialState;
+        } catch (error) {
+            console.error(`Failed to parse ${key} from localStorage`, error);
+            return initialState;
+        }
+    });
 
     useEffect(() => {
         try {
-            localStorage.setItem(`${TRACKERS_STORAGE_KEY_PREFIX}habits`, JSON.stringify(habits));
-            localStorage.setItem(`${TRACKERS_STORAGE_KEY_PREFIX}goals`, JSON.stringify(goals));
-            localStorage.setItem(`${TRACKERS_STORAGE_KEY_PREFIX}health`, JSON.stringify(healthData));
-            localStorage.setItem(`${TRACKERS_STORAGE_KEY_PREFIX}cgpaState`, JSON.stringify({semesters, cgpa}));
-            localStorage.setItem(`${TRACKERS_STORAGE_KEY_PREFIX}skills`, JSON.stringify(skills));
-            localStorage.setItem(`${TRACKERS_STORAGE_KEY_PREFIX}finance`, JSON.stringify(transactions));
-            localStorage.setItem(`${TRACKERS_STORAGE_KEY_PREFIX}experience`, JSON.stringify(experience));
-            localStorage.setItem(`${TRACKERS_STORAGE_KEY_PREFIX}events`, JSON.stringify(involvement));
-            localStorage.setItem(`${TRACKERS_STORAGE_KEY_PREFIX}placement`, JSON.stringify(placementPrep));
+            localStorage.setItem(`${TRACKERS_STORAGE_KEY_PREFIX}${key}`, JSON.stringify(state));
         } catch (error) {
-            console.error("Failed to save trackers to localStorage", error);
+            console.error(`Failed to save ${key} to localStorage`, error);
         }
-    }, [habits, goals, healthData, semesters, cgpa, skills, transactions, experience, involvement, placementPrep]);
+    }, [key, state]);
 
+    return [state, setState];
+}
+
+export function TrackersView() {
+    const [habits, setHabits] = useTrackerState('habits', initialHabits);
+    const [newHabit, setNewHabit] = useState('');
+    
+    const [goals, setGoals] = useTrackerState('goals', initialGoals);
+    const [newGoal, setNewGoal] = useState({text: '', category: 'Academic'});
+    
+    const [healthData, setHealthData] = useTrackerState('health', initialHealthData);
+    const [newWorkout, setNewWorkout] = useState({ activity: '', duration: '', date: ''});
+    const [newHygieneItem, setNewHygieneItem] = useState('');
+
+    const [semesters, setSemesters] = useTrackerState('semesters', initialSemesters);
+    const [cgpa, setCgpa] = useTrackerState('cgpa', {current: '8.5', goal: '9.0'});
+    
+    const [skills, setSkills] = useTrackerState('skills', initialSkills);
+    const [newSkill, setNewSkill] = useState({name: '', value: 50});
+    
+    const [transactions, setTransactions] = useTrackerState('transactions', initialTransactions);
+    const [newTransaction, setNewTransaction] = useState({ description: '', amount: '', type: 'expense' as const });
+    
+    const [experience, setExperience] = useTrackerState('experience', initialExperience);
+    
+    const [involvement, setInvolvement] = useTrackerState('involvement', initialInvolvement);
+    
+    const [placementPrep, setPlacementPrep] = useTrackerState('placementPrep', initialPlacementPrep);
+    const [newPrepItem, setNewPrepItem] = useState('');
+    
     const toggleHabit = (habitIndex: number, dayIndex: number) => {
         const newHabits = [...habits];
         newHabits[habitIndex].days[dayIndex] = !newHabits[habitIndex].days[dayIndex];
@@ -181,14 +164,12 @@ export function TrackersView() {
         setHabits(habits.filter((_, index) => index !== habitIndex));
     }
 
-    // State for CGPA Tracker
     const handleSemesterChange = (index: number, field: 'sgpa' | 'credits', value: string) => {
         const newSemesters = [...semesters];
         newSemesters[index][field] = value;
         setSemesters(newSemesters);
     }
     
-    // State for Finance Tracker
     const addTransaction = () => {
         const amount = parseFloat(newTransaction.amount);
         if(newTransaction.description.trim() && !isNaN(amount)){
@@ -209,8 +190,6 @@ export function TrackersView() {
     const totalIncome = transactions.filter(t => t.amount > 0).reduce((sum, t) => sum + t.amount, 0);
     const totalExpenses = transactions.filter(t => t.amount < 0).reduce((sum, t) => sum + t.amount, 0);
 
-
-    // State for Skills
     const handleSkillChange = (index: number, value: number) => {
         const newSkills = [...skills];
         newSkills[index].value = isNaN(value) ? 0 : Math.min(100, Math.max(0, value));
@@ -238,8 +217,6 @@ export function TrackersView() {
         setSkills(skills.filter((_, i) => i !== index));
     }
 
-
-    // State for Experience Tracker
     const addExperience = () => setExperience([...experience, { type: 'Project', title: '', duration: '', status: 'In Progress' }]);
     const deleteExperience = (index: number) => setExperience(experience.filter((_, i) => i !== index));
     const handleExperienceChange = (index: number, field: keyof typeof experience[0], value: string) => {
@@ -248,8 +225,6 @@ export function TrackersView() {
         setExperience(newExperience);
     }
 
-
-    // State for Involvement Tracker
     const addInvolvement = () => setInvolvement([...involvement, { activity: '', contribution: '', date: '' }]);
     const deleteInvolvement = (index: number) => setInvolvement(involvement.filter((_, i) => i !== index));
     const handleInvolvementChange = (index: number, field: keyof typeof involvement[0], value: string) => {
@@ -258,7 +233,6 @@ export function TrackersView() {
         setInvolvement(newInvolvement);
     }
 
-    // State for Placement Prep
     const togglePlacementPrep = (index: number) => {
         const newPlacementPrep = [...placementPrep];
         newPlacementPrep[index].done = !newPlacementPrep[index].done;
@@ -282,7 +256,6 @@ export function TrackersView() {
         setPlacementPrep(newPlacementPrep);
     }
 
-    // State for Goal Tracker
     const toggleGoal = (index: number) => {
         const newGoals = [...goals];
         newGoals[index].done = !newGoals[index].done;
@@ -306,7 +279,6 @@ export function TrackersView() {
         setGoals(newGoals);
     };
 
-    // State for Health Tracker
     const handleHealthDataChange = (field: keyof typeof healthData, value: number) => {
         if (!isNaN(value)) {
             setHealthData(prev => ({...prev, [field]: value}));
@@ -349,7 +321,7 @@ export function TrackersView() {
         <Tabs defaultValue="habits" className="w-full flex flex-col md:flex-row gap-6">
             <TabsList className="w-full md:w-48 flex-col h-auto justify-start">
                 {trackerSections.map(section => (
-                    <TabsTrigger key={section.value} value={section.value} className="w-full flex gap-2 justify-start p-4">
+                    <TabsTrigger key={section.value} value={section.value} className="w-full flex gap-2 justify-start p-2 md:p-4 text-sm md:text-base">
                         <section.icon className="h-5 w-5" /> <span className="hidden md:inline">{section.label}</span>
                     </TabsTrigger>
                 ))}
@@ -364,7 +336,7 @@ export function TrackersView() {
                         <CardContent className="space-y-4">
                             <Card>
                                 <CardContent className="p-4 flex gap-2">
-                                    <Input value={newHabit} onChange={e => setNewHabit(e.target.value)} placeholder="Add a new daily habit..." />
+                                    <Input value={newHabit} onChange={e => setNewHabit(e.target.value)} onKeyDown={e => e.key === 'Enter' && addHabit()} placeholder="Add a new daily habit..." />
                                     <Button onClick={addHabit}><PlusCircle className="mr-2 h-4 w-4" />Add Habit</Button>
                                 </CardContent>
                             </Card>
@@ -431,6 +403,7 @@ export function TrackersView() {
                                                     placeholder={`New ${category} goal...`}
                                                     value={newGoal.category === category ? newGoal.text : ''}
                                                     onChange={e => setNewGoal({text: e.target.value, category})}
+                                                    onKeyDown={e => { if(e.key === 'Enter') addGoal(category) }}
                                                 />
                                                 <Button onClick={() => addGoal(category)} size="icon"><PlusCircle className="h-4 w-4"/></Button>
                                             </div>
@@ -483,7 +456,7 @@ export function TrackersView() {
                                         <Bed className="h-4 w-4 text-muted-foreground" />
                                     </CardHeader>
                                     <CardContent>
-                                         <Input type="number" value={healthData.sleep} onChange={e => handleHealthDataChange('sleep', parseFloat(e.target.value))} className="text-2xl font-bold h-auto border-none p-0 focus-visible:ring-0" />
+                                         <Input type="number" step="0.5" value={healthData.sleep} onChange={e => handleHealthDataChange('sleep', parseFloat(e.target.value))} className="text-2xl font-bold h-auto border-none p-0 focus-visible:ring-0" />
                                     </CardContent>
                                 </Card>
                                 <Card>
@@ -526,7 +499,7 @@ export function TrackersView() {
                                     <Card>
                                         <CardContent className="p-4 space-y-4">
                                             <div className="flex gap-2">
-                                                <Input placeholder="New task..." value={newHygieneItem} onChange={e => setNewHygieneItem(e.target.value)} />
+                                                <Input placeholder="New task..." value={newHygieneItem} onChange={e => setNewHygieneItem(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && addHygieneItem()} />
                                                 <Button onClick={addHygieneItem} size="icon"><PlusCircle className="h-4 w-4" /></Button>
                                             </div>
                                             <div className="max-h-32 overflow-y-auto space-y-2 pr-2">
@@ -560,8 +533,8 @@ export function TrackersView() {
                         <CardContent className="space-y-6">
                             <Card className="bg-background/50">
                                 <CardContent className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div><label className="text-sm font-medium text-muted-foreground">Current CGPA</label><Input type="number" placeholder="8.5" value={cgpa.current} onChange={e => setCgpa({...cgpa, current: e.target.value})} className="text-lg font-bold"/></div>
-                                <div><label className="text-sm font-medium text-muted-foreground">Goal CGPA</label><Input type="number" placeholder="9.0+" value={cgpa.goal} onChange={e => setCgpa({...cgpa, goal: e.target.value})} className="text-lg font-bold"/></div>
+                                <div><label className="text-sm font-medium text-muted-foreground">Current CGPA</label><Input type="number" step="0.01" placeholder="8.5" value={cgpa.current} onChange={e => setCgpa({...cgpa, current: e.target.value})} className="text-lg font-bold"/></div>
+                                <div><label className="text-sm font-medium text-muted-foreground">Goal CGPA</label><Input type="number" step="0.01" placeholder="9.0+" value={cgpa.goal} onChange={e => setCgpa({...cgpa, goal: e.target.value})} className="text-lg font-bold"/></div>
                                 </CardContent>
                             </Card>
                             <div className="rounded-md border">
@@ -571,7 +544,7 @@ export function TrackersView() {
                                     {semesters.map((sem, i) => (
                                         <TableRow key={i}>
                                             <TableCell className="font-semibold">Semester {i+1}</TableCell>
-                                            <TableCell><Input type="number" placeholder="-" value={sem.sgpa} onChange={e => handleSemesterChange(i, 'sgpa', e.target.value)} className="w-24"/></TableCell>
+                                            <TableCell><Input type="number" step="0.01" placeholder="-" value={sem.sgpa} onChange={e => handleSemesterChange(i, 'sgpa', e.target.value)} className="w-24"/></TableCell>
                                             <TableCell><Input type="number" placeholder="-" value={sem.credits} onChange={e => handleSemesterChange(i, 'credits', e.target.value)} className="w-24" /></TableCell>
                                         </TableRow>
                                     ))}
@@ -591,8 +564,8 @@ export function TrackersView() {
                         <CardContent className="space-y-4">
                             <Card>
                                 <CardContent className="p-4 flex gap-2">
-                                    <Input value={newSkill.name} onChange={e => handleNewSkillChange('name', e.target.value)} placeholder="Add a new skill to master..." />
-                                    <Input type="number" value={newSkill.value} onChange={e => handleNewSkillChange('value', e.target.value)} placeholder="%" className="w-24" />
+                                    <Input value={newSkill.name} onChange={e => handleNewSkillChange('name', e.target.value)} onKeyDown={(e) => e.key === 'Enter' && addSkill()} placeholder="Add a new skill to master..." />
+                                    <Input type="number" value={newSkill.value} onChange={e => handleNewSkillChange('value', parseInt(e.target.value))} placeholder="%" className="w-24" />
                                     <Button onClick={addSkill}><PlusCircle className="mr-2 h-4 w-4" />Add Skill</Button>
                                 </CardContent>
                             </Card>
@@ -640,8 +613,8 @@ export function TrackersView() {
                             <Card className="bg-primary/10 border-primary/50"><CardHeader><CardTitle className="text-primary">₹{(totalIncome + totalExpenses).toFixed(2)}</CardTitle><CardDescription>Net Balance</CardDescription></CardHeader></Card>
                             </div>
                             <Card>
-                                <CardContent className="p-4 flex gap-2">
-                                    <Input value={newTransaction.description} onChange={e => handleTransactionChange('description', e.target.value)} placeholder="Description" />
+                                <CardContent className="p-4 flex flex-wrap gap-2">
+                                    <Input value={newTransaction.description} onChange={e => handleTransactionChange('description', e.target.value)} placeholder="Description" className="flex-1 min-w-[150px]" />
                                     <Input type="number" value={newTransaction.amount} onChange={e => handleTransactionChange('amount', e.target.value)} placeholder="Amount" className="w-32" />
                                     <Select value={newTransaction.type} onValueChange={(value) => handleTransactionChange('type', value as 'income' | 'expense')}>
                                         <SelectTrigger className="w-32">
@@ -652,7 +625,7 @@ export function TrackersView() {
                                             <SelectItem value="expense">Expense</SelectItem>
                                         </SelectContent>
                                     </Select>
-                                    <Button onClick={addTransaction}><PlusCircle className="mr-2 h-4 w-4"/>Add</Button>
+                                    <Button onClick={addTransaction} className="flex-shrink-0"><PlusCircle className="mr-2 h-4 w-4"/>Add</Button>
                                 </CardContent>
                             </Card>
                             <div className="rounded-md border">
@@ -761,7 +734,7 @@ export function TrackersView() {
                         <CardContent className="space-y-4">
                             <Card>
                                 <CardContent className="p-4 flex gap-2">
-                                    <Input value={newPrepItem} onChange={e => setNewPrepItem(e.target.value)} placeholder="Add a new checklist item..." />
+                                    <Input value={newPrepItem} onChange={e => setNewPrepItem(e.target.value)} onKeyDown={e => e.key === 'Enter' && addPlacementPrepItem()} placeholder="Add a new checklist item..." />
                                     <Button onClick={addPlacementPrepItem}><PlusCircle className="mr-2 h-4 w-4" />Add Item</Button>
                                 </CardContent>
                             </Card>
@@ -787,15 +760,3 @@ export function TrackersView() {
         </Tabs>
     );
 }
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    

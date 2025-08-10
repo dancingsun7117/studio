@@ -44,6 +44,7 @@ export default function PlannerPage() {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date(2025, 0, 1));
   const [monthlyQuote, setMonthlyQuote] = useState(mafiaQuotes[0]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isClient, setIsClient] = useState(false);
   
   const [schedule, setSchedule] = useState<Record<string, DayData>>({});
   const [monthlyFocus, setMonthlyFocus] = useState<Record<string, string>>({});
@@ -52,8 +53,13 @@ export default function PlannerPage() {
   const [newEvent, setNewEvent] = useState({ title: '', time: '' });
   const [newTodo, setNewTodo] = useState('');
 
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   // Load schedule from localStorage
   useEffect(() => {
+    if (!isClient) return;
     try {
       const savedSchedule = localStorage.getItem(SCHEDULE_STORAGE_KEY);
       if (savedSchedule) {
@@ -66,13 +72,21 @@ export default function PlannerPage() {
             }
         });
       }
+
+      const savedFocus = localStorage.getItem(MONTHLY_FOCUS_STORAGE_KEY);
+      if (savedFocus) setMonthlyFocus(JSON.parse(savedFocus));
+      
+      const savedBudget = localStorage.getItem(MONTHLY_BUDGET_STORAGE_KEY);
+      if (savedBudget) setMonthlyBudget(JSON.parse(savedBudget));
+
     } catch (error) {
-      console.error("Failed to parse schedule from localStorage", error);
+      console.error("Failed to parse data from localStorage", error);
     }
-  }, []);
+  }, [isClient]);
 
   // Save schedule to localStorage
   useEffect(() => {
+    if (!isClient) return;
     try {
         if (Object.keys(schedule).length > 0) {
             localStorage.setItem(SCHEDULE_STORAGE_KEY, JSON.stringify(schedule));
@@ -80,49 +94,18 @@ export default function PlannerPage() {
     } catch (error) {
         console.error("Failed to save schedule to localStorage", error);
     }
-  }, [schedule]);
+  }, [schedule, isClient]);
   
-  // Load monthly focus from localStorage
+  // Save monthly focus & budget to localStorage
   useEffect(() => {
-    try {
-      const savedFocus = localStorage.getItem(MONTHLY_FOCUS_STORAGE_KEY);
-      if (savedFocus) {
-        setMonthlyFocus(JSON.parse(savedFocus));
-      }
-    } catch (error) {
-        console.error("Failed to load monthly focus from localStorage", error);
-    }
-  }, []);
-
-  // Save monthly focus to localStorage
-  useEffect(() => {
+    if (!isClient) return;
     try {
         localStorage.setItem(MONTHLY_FOCUS_STORAGE_KEY, JSON.stringify(monthlyFocus));
-    } catch (error) {
-        console.error("Failed to save monthly focus to localStorage", error);
-    }
-  }, [monthlyFocus]);
-  
-   // Load monthly budget from localStorage
-  useEffect(() => {
-    try {
-      const savedBudget = localStorage.getItem(MONTHLY_BUDGET_STORAGE_KEY);
-      if (savedBudget) {
-        setMonthlyBudget(JSON.parse(savedBudget));
-      }
-    } catch (error) {
-        console.error("Failed to load monthly budget from localStorage", error);
-    }
-  }, []);
-
-  // Save monthly budget to localStorage
-  useEffect(() => {
-    try {
         localStorage.setItem(MONTHLY_BUDGET_STORAGE_KEY, JSON.stringify(monthlyBudget));
     } catch (error) {
-        console.error("Failed to save monthly budget to localStorage", error);
+        console.error("Failed to save monthly data to localStorage", error);
     }
-  }, [monthlyBudget]);
+  }, [monthlyFocus, monthlyBudget, isClient]);
 
   const handleDateSelect = (date: Date | undefined) => {
     if (date) {
@@ -168,8 +151,8 @@ export default function PlannerPage() {
     });
   };
   
-  const addEventToDate = (date: Date) => {
-    if (!newEvent.title.trim()) return;
+  const addEventToDate = (date: Date | undefined) => {
+    if (!date || !newEvent.title.trim()) return;
     const dayKey = getDayKey(date);
     const dayData = schedule[dayKey] || { events: [], todos: [] };
     const updatedDayData = {
@@ -178,17 +161,6 @@ export default function PlannerPage() {
     };
     updateScheduleForDay(dayKey, updatedDayData);
     setNewEvent({ title: '', time: '' });
-  };
-
-  const addEventToSchedule = () => {
-    if (!selectedDate) return;
-    addEventToDate(selectedDate);
-  };
-  
-  const addEventForNextDay = () => {
-    if (!selectedDate) return;
-    const nextDay = addDays(selectedDate, 1);
-    addEventToDate(nextDay);
   };
   
   const addTodoToSchedule = () => {
@@ -337,10 +309,10 @@ export default function PlannerPage() {
                          <div className="mt-4 flex gap-2">
                             <Input value={newEvent.title} onChange={e => setNewEvent({...newEvent, title: e.target.value})} placeholder="Event Title" />
                             <Input value={newEvent.time} onChange={e => setNewEvent({...newEvent, time: e.target.value})} placeholder="Time" className="w-28" />
-                            <Button onClick={addEventToSchedule} size="icon" title="Add to selected date"><PlusCircle className="h-4 w-4"/></Button>
+                            <Button onClick={() => addEventToDate(selectedDate)} size="icon" title="Add to selected date"><PlusCircle className="h-4 w-4"/></Button>
                         </div>
                         <div className="mt-2">
-                            <Button onClick={addEventForNextDay} variant="outline" size="sm" className="w-full">
+                            <Button onClick={() => addEventToDate(selectedDate ? addDays(selectedDate, 1) : undefined)} variant="outline" size="sm" className="w-full">
                                 Add for Next Day ({selectedDate ? format(addDays(selectedDate, 1), 'LLL d') : ''})
                             </Button>
                         </div>
@@ -359,7 +331,7 @@ export default function PlannerPage() {
                             ) : (<p className="text-sm text-muted-foreground italic">No tasks for today.</p>)}
                         </div>
                          <div className="mt-4 flex gap-2">
-                             <Input value={newTodo} onChange={e => setNewTodo(e.target.value)} placeholder="New to-do item..." />
+                             <Input value={newTodo} onChange={e => setNewTodo(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && addTodoToSchedule()} placeholder="New to-do item..." />
                             <Button onClick={addTodoToSchedule} size="icon"><PlusCircle className="h-4 w-4"/></Button>
                         </div>
                     </div>
@@ -374,5 +346,3 @@ export default function PlannerPage() {
     </div>
   );
 }
-
-    

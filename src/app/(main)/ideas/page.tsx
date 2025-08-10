@@ -27,7 +27,7 @@ const initialIdeas: Idea[] = [
 ];
 
 export default function IdeasPage() {
-  const [ideas, setIdeas] = useState<Idea[]>(initialIdeas);
+  const [ideas, setIdeas] = useState<Idea[]>([]);
   const [newIdea, setNewIdea] = useState({ title: '', content: '' });
 
   // Drawing state
@@ -41,15 +41,35 @@ export default function IdeasPage() {
 
   useEffect(() => {
     setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isClient) return;
     try {
       const savedIdeas = localStorage.getItem(IDEAS_STORAGE_KEY);
-      if (savedIdeas) {
-        setIdeas(JSON.parse(savedIdeas));
+      setIdeas(savedIdeas ? JSON.parse(savedIdeas) : initialIdeas);
+
+      const canvas = canvasRef.current;
+      const context = canvas?.getContext('2d');
+      if (context) {
+        const savedDrawing = localStorage.getItem(IDEAS_DRAWING_STORAGE_KEY);
+        if (savedDrawing) {
+          const image = new Image();
+          image.onload = () => {
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            context.drawImage(image, 0, 0);
+            saveToHistory(canvas.toDataURL(), true);
+          };
+          image.src = savedDrawing;
+        } else {
+            saveToHistory(canvas!.toDataURL(), true);
+        }
       }
     } catch (error) {
-      console.error("Failed to parse ideas from localStorage", error);
+      console.error("Failed to load data from localStorage", error);
     }
-  }, []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isClient]);
 
   useEffect(() => {
     if (isClient) {
@@ -61,30 +81,12 @@ export default function IdeasPage() {
     }
   }, [ideas, isClient]);
 
-   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (canvas && isClient) {
-      const context = canvas.getContext('2d');
-      if (context) {
-        const savedDrawing = localStorage.getItem(IDEAS_DRAWING_STORAGE_KEY);
-        if (savedDrawing) {
-          const image = new Image();
-          image.onload = () => {
-            context.clearRect(0, 0, canvas.width, canvas.height);
-            context.drawImage(image, 0, 0);
-            saveToHistory(canvas.toDataURL());
-          };
-          image.src = savedDrawing;
-        } else {
-            saveToHistory(canvas.toDataURL());
-        }
-      }
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isClient]);
-
-  const saveToHistory = (dataUrl: string) => {
+  const saveToHistory = (dataUrl: string, initial = false) => {
     setHistory(prev => {
+        if (initial) {
+          setHistoryIndex(0);
+          return [dataUrl];
+        }
         const newHistory = prev.slice(0, historyIndex + 1);
         newHistory.push(dataUrl);
         setHistoryIndex(newHistory.length - 1);
@@ -156,22 +158,26 @@ export default function IdeasPage() {
       localStorage.setItem(IDEAS_DRAWING_STORAGE_KEY, dataUrl);
     }
   };
+  
+  const applyHistoryState = (index: number) => {
+    const canvas = canvasRef.current;
+    const context = canvas?.getContext('2d');
+    if (canvas && context) {
+      const image = new Image();
+      image.onload = () => {
+          context.clearRect(0, 0, canvas.width, canvas.height);
+          context.drawImage(image, 0, 0);
+          localStorage.setItem(IDEAS_DRAWING_STORAGE_KEY, image.src);
+      };
+      image.src = history[index];
+    }
+  }
 
   const undo = () => {
     if (historyIndex > 0) {
       const newIndex = historyIndex - 1;
       setHistoryIndex(newIndex);
-      const canvas = canvasRef.current;
-      const context = canvas?.getContext('2d');
-      if (canvas && context) {
-        const image = new Image();
-        image.onload = () => {
-            context.clearRect(0, 0, canvas.width, canvas.height);
-            context.drawImage(image, 0, 0);
-            localStorage.setItem(IDEAS_DRAWING_STORAGE_KEY, image.src);
-        };
-        image.src = history[newIndex];
-      }
+      applyHistoryState(newIndex);
     }
   };
 
@@ -179,17 +185,7 @@ export default function IdeasPage() {
     if (historyIndex < history.length - 1) {
       const newIndex = historyIndex + 1;
       setHistoryIndex(newIndex);
-      const canvas = canvasRef.current;
-      const context = canvas?.getContext('2d');
-      if (canvas && context) {
-        const image = new Image();
-        image.onload = () => {
-            context.clearRect(0, 0, canvas.width, canvas.height);
-            context.drawImage(image, 0, 0);
-            localStorage.setItem(IDEAS_DRAWING_STORAGE_KEY, image.src);
-        };
-        image.src = history[newIndex];
-      }
+      applyHistoryState(newIndex);
     }
   };
 
@@ -236,6 +232,7 @@ export default function IdeasPage() {
                     placeholder="Describe your idea..." 
                     value={newIdea.content}
                     onChange={(e) => setNewIdea({...newIdea, content: e.target.value})}
+                    onKeyDown={(e) => { if (e.key === 'Enter' && e.metaKey) addIdea(); }}
                     className="italic"
                     />
                     <Button onClick={addIdea} className="w-full">
@@ -260,7 +257,7 @@ export default function IdeasPage() {
                             />
                         )}
                         <div className="absolute top-2 right-2 flex gap-1">
-                        <Button variant="outline" size="icon" onClick={undo} disabled={historyIndex <= 0}><Undo className="h-4 w-4"/></Button>
+                            <Button variant="outline" size="icon" onClick={undo} disabled={historyIndex <= 0}><Undo className="h-4 w-4"/></Button>
                             <Button variant="outline" size="icon" onClick={redo} disabled={historyIndex >= history.length - 1}><Redo className="h-4 w-4"/></Button>
                             <Popover>
                                 <PopoverTrigger asChild>

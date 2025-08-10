@@ -30,8 +30,8 @@ const initialPage: NotePageData = {
 };
 
 export default function NotesPage() {
-  const [pages, setPages] = useState<NotePageData[]>([initialPage]);
-  const [activePageId, setActivePageId] = useState<number | null>(1);
+  const [pages, setPages] = useState<NotePageData[]>([]);
+  const [activePageId, setActivePageId] = useState<number | null>(null);
   
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -41,10 +41,16 @@ export default function NotesPage() {
   const [history, setHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [isClient, setIsClient] = useState(false);
+  
+  const activePage = pages.find(p => p.id === activePageId);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   // Load from localStorage on mount
   useEffect(() => {
-    setIsClient(true);
+    if (!isClient) return;
     try {
       const savedPages = localStorage.getItem(NOTES_PAGES_STORAGE_KEY);
       if (savedPages) {
@@ -52,16 +58,22 @@ export default function NotesPage() {
         if (parsedPages.length > 0) {
             setPages(parsedPages);
             setActivePageId(parsedPages[0].id);
+        } else {
+            setPages([initialPage]);
+            setActivePageId(initialPage.id);
         }
+      } else {
+        setPages([initialPage]);
+        setActivePageId(initialPage.id);
       }
     } catch (error) {
       console.error("Failed to parse notes from localStorage", error);
     }
-  }, []);
+  }, [isClient]);
 
   // Save to localStorage whenever pages change
   useEffect(() => {
-    if (isClient) {
+    if (isClient && pages.length > 0) {
       try {
         localStorage.setItem(NOTES_PAGES_STORAGE_KEY, JSON.stringify(pages));
       } catch (error) {
@@ -69,8 +81,6 @@ export default function NotesPage() {
       }
     }
   }, [pages, isClient]);
-  
-  const activePage = pages.find(p => p.id === activePageId);
 
   // Load canvas drawing for active page
   useEffect(() => {
@@ -103,7 +113,7 @@ export default function NotesPage() {
   }, [activePage, isClient]);
 
   const updatePageData = (pageId: number, updates: Partial<NotePageData>) => {
-    setPages(pages.map(p => p.id === pageId ? { ...p, ...updates } : p));
+    setPages(currentPages => currentPages.map(p => p.id === pageId ? { ...p, ...updates } : p));
   };
   
   const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -133,7 +143,13 @@ export default function NotesPage() {
     const newPages = pages.filter(p => p.id !== pageId);
     setPages(newPages);
     if (activePageId === pageId) {
-        setActivePageId(newPages.length > 0 ? newPages[0].id : null);
+        if (newPages.length > 0) {
+            setActivePageId(newPages[0].id);
+        } else {
+            const defaultPage = { ...initialPage, id: Date.now() };
+            setPages([defaultPage]);
+            setActivePageId(defaultPage.id);
+        }
     }
   };
 
@@ -220,7 +236,7 @@ export default function NotesPage() {
     if (context) {
       context.clearRect(0, 0, canvas.width, canvas.height);
       const dataUrl = canvas.toDataURL();
-      saveToHistory(dataUrl);
+      saveToHistory(dataUrl, true);
       updateDrawingForPage(dataUrl);
     }
   };
@@ -391,8 +407,8 @@ export default function NotesPage() {
                                         </div>
                                     </PopoverContent>
                                 </Popover>
-                                <Button variant="outline" size="icon" onClick={() => setColor('#FFFFFF')}><Eraser className="h-4 w-4"/></Button>
-                                <Button variant="destructive" size="icon" onClick={clearCanvas}><Trash2 className="h-4 w-4"/></Button>
+                                <Button variant="outline" size="icon" onClick={() => setColor('#FFFFFF')} title="Eraser"><Eraser className="h-4 w-4"/></Button>
+                                <Button variant="destructive" size="icon" onClick={clearCanvas} title="Clear Canvas"><Trash2 className="h-4 w-4"/></Button>
                             </div>
                         </>
                     )}

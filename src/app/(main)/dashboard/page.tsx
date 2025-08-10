@@ -33,10 +33,16 @@ export default function DashboardPage() {
   const [newReminder, setNewReminder] = useState('');
   const [visionBoardImage, setVisionBoardImage] = useState<string | null>(null);
   const [gratitudeText, setGratitudeText] = useState('');
-  const [missionStatement, setMissionStatement] = useState('“In a world full of noise, she codes in silence and conquers in power.”');
+  const [missionStatement, setMissionStatement] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isClient) return;
     try {
       const savedImage = localStorage.getItem(VISION_BOARD_STORAGE_KEY);
       if (savedImage) {
@@ -49,27 +55,31 @@ export default function DashboardPage() {
       const savedMission = localStorage.getItem(MISSION_STATEMENT_STORAGE_KEY);
       if (savedMission) {
         setMissionStatement(savedMission);
+      } else {
+        setMissionStatement('“In a world full of noise, she codes in silence and conquers in power.”');
       }
     } catch (error) {
       console.error("Failed to load data from localStorage", error);
     }
-  }, []);
+  }, [isClient]);
 
   useEffect(() => {
+    if (!isClient) return;
     try {
       localStorage.setItem(GRATITUDE_STORAGE_KEY, gratitudeText);
     } catch (error) {
       console.error("Failed to save gratitude text to localStorage", error);
     }
-  }, [gratitudeText]);
+  }, [gratitudeText, isClient]);
   
   useEffect(() => {
+    if (!isClient) return;
     try {
       localStorage.setItem(MISSION_STATEMENT_STORAGE_KEY, missionStatement);
     } catch (error) {
       console.error("Failed to save mission statement to localStorage", error);
     }
-  }, [missionStatement]);
+  }, [missionStatement, isClient]);
 
   const addReminder = () => {
     if (newReminder.trim()) {
@@ -122,6 +132,10 @@ export default function DashboardPage() {
       console.error("Failed to remove vision board image from localStorage", error);
     }
   };
+
+  if (!isClient) {
+    return null; // Or a loading spinner
+  }
 
   return (
     <div className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
@@ -228,6 +242,7 @@ export default function DashboardPage() {
                         placeholder="Add a new daily reminder..." 
                         value={newReminder}
                         onChange={(e) => setNewReminder(e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && addReminder()}
                         className="italic"
                     />
                     <Button onClick={addReminder}>
@@ -260,5 +275,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-
-    
