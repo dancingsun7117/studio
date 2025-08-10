@@ -6,6 +6,7 @@ import { Star, GlassWater, Apple, Dumbbell, BookOpen, Sparkles, Smile, Heart, Pl
 import { useQuote } from '@/context/QuoteContext';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { ImageUploader } from '@/components/ui/image-uploader';
 
 const initialReminders = [
     { id: 1, icon: GlassWater, text: "Drink Water", color: "text-blue-400" },
@@ -58,20 +59,23 @@ export default function DashboardPage() {
         </p>
       </div>
 
-      <Card className="border-primary/50 bg-primary/10">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium font-body text-primary">
-            Chosen Affirmation
-          </CardTitle>
-          <Star className="h-5 w-5 text-primary" />
-        </CardHeader>
-        <CardContent>
-          <p className="font-headline text-2xl font-bold text-foreground">
-            &ldquo;{selectedQuote.text}&rdquo;
-          </p>
-        </CardContent>
-      </Card>
-      
+      <div className="grid gap-4 md:grid-cols-2">
+        <Card className="border-primary/50 bg-primary/10">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium font-body text-primary">
+              Chosen Affirmation
+            </CardTitle>
+            <Star className="h-5 w-5 text-primary" />
+          </CardHeader>
+          <CardContent>
+            <p className="font-headline text-2xl font-bold text-foreground">
+              &ldquo;{selectedQuote.text}&rdquo;
+            </p>
+          </CardContent>
+        </Card>
+        <ImageUploader defaultImage="https://placehold.co/600x400.png" dataAiHint="moody landscape" />
+      </div>
+
       <div>
         <h2 className="font-headline text-2xl font-bold text-primary mb-4">Daily Reminders</h2>
         <div className="mb-4">

@@ -2,6 +2,7 @@
 
 import { Textarea } from '@/components/ui/textarea';
 import { MafiaSealIcon } from '@/components/icons';
+import { ImageUploader } from '@/components/ui/image-uploader';
 
 export default function NotesPage() {
   const dotGridStyle = {
@@ -20,13 +21,20 @@ export default function NotesPage() {
           A secure place for your thoughts, plans, and secret algorithms.
         </p>
       </div>
-      <div className="relative flex-1">
-        <MafiaSealIcon className="absolute bottom-8 right-8 h-32 w-32 text-foreground/5 opacity-50 pointer-events-none" />
-        <Textarea
-          placeholder="Start typing your master plan..."
-          className="h-full min-h-[50vh] w-full resize-none text-lg font-body"
-          style={dotGridStyle}
-        />
+      <div className="grid md:grid-cols-2 gap-8 flex-1">
+        <div className="relative flex-1 flex flex-col">
+          <MafiaSealIcon className="absolute bottom-8 right-8 h-32 w-32 text-foreground/5 opacity-50 pointer-events-none" />
+          <Textarea
+            placeholder="Start typing your master plan..."
+            className="h-full min-h-[50vh] w-full resize-none text-lg font-body"
+            style={dotGridStyle}
+          />
+        </div>
+        <div className="space-y-4">
+           <h2 className="font-headline text-2xl font-bold text-primary">Mood Board</h2>
+           <ImageUploader dataAiHint="vintage book" />
+           <ImageUploader dataAiHint="architectural blueprint" />
+        </div>
       </div>
     </div>
   );
