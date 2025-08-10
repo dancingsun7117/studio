@@ -10,14 +10,13 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { CheckCircle, DollarSign, GitBranch, GraduationCap, Trophy, Users, Briefcase, Target, PlusCircle, Trash2, HeartPulse, GlassWater, Dumbbell, Bed } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Slider } from '@/components/ui/slider';
 
 const trackerSections = [
     { value: 'habits', label: 'Habit Tracker', icon: CheckCircle },
     { value: 'goals', label: 'Goal Tracker', icon: Target },
     { value: 'health', label: 'Health & Fitness', icon: HeartPulse },
     { value: 'cgpa', label: 'CGPA Tracker', icon: GraduationCap },
-    { value: 'coding', label: 'Skills', icon: GitBranch },
+    { value: 'skills', label: 'Skills Tracker', icon: GitBranch },
     { value: 'finance', label: 'Finance Tracker', icon: DollarSign },
     { value: 'experience', label: 'Experience', icon: Briefcase },
     { value: 'events', label: 'Events & Orgs', icon: Trophy },
@@ -212,9 +211,9 @@ export function TrackersView() {
 
 
     // State for Skills
-    const handleSkillChange = (index: number, value: number[]) => {
+    const handleSkillChange = (index: number, value: number) => {
         const newSkills = [...skills];
-        newSkills[index].value = isNaN(value[0]) ? 0 : Math.min(100, Math.max(0, value[0]));
+        newSkills[index].value = isNaN(value) ? 0 : Math.min(100, Math.max(0, value));
         setSkills(newSkills);
     };
 
@@ -583,7 +582,7 @@ export function TrackersView() {
                     </Card>
                 </TabsContent>
 
-                <TabsContent value="coding" className="mt-0">
+                <TabsContent value="skills" className="mt-0">
                     <Card className="h-full">
                         <CardHeader>
                             <CardTitle className="font-headline text-2xl text-primary">Skills Tracker</CardTitle>
@@ -599,19 +598,22 @@ export function TrackersView() {
                             </Card>
                             <div className="space-y-6 pt-4">
                                 {skills.map((skill, index) => (
-                                    <div key={index} className="flex items-center gap-4 group">
+                                    <div key={index} className="grid grid-cols-1 md:grid-cols-[150px_1fr_auto] items-center gap-4 group">
                                         <Input
                                             value={skill.name}
                                             onChange={(e) => handleSkillNameChange(index, e.target.value)}
-                                            className="w-40 text-base font-semibold text-foreground p-0 h-auto border-none bg-transparent focus-visible:ring-0"
+                                            className="text-base font-semibold text-foreground p-0 h-auto border-none bg-transparent focus-visible:ring-0"
                                         />
-                                        <div className="flex-1 flex items-center gap-4">
-                                            <Slider
-                                                value={[skill.value]}
-                                                onValueChange={(value) => handleSkillChange(index, value)}
-                                                max={100}
-                                                step={1}
-                                                className="flex-1"
+                                        <div className="flex items-center gap-4">
+                                            <input
+                                                type="range"
+                                                min="0"
+                                                max="100"
+                                                step="1"
+                                                value={skill.value}
+                                                onChange={(e) => handleSkillChange(index, parseInt(e.target.value))}
+                                                className="w-full custom-range"
+                                                style={{'--value': `${skill.value}%`} as React.CSSProperties}
                                             />
                                             <span className="text-sm font-medium text-primary w-12 text-right">{skill.value}%</span>
                                         </div>
@@ -785,6 +787,8 @@ export function TrackersView() {
         </Tabs>
     );
 }
+
+    
 
     
 

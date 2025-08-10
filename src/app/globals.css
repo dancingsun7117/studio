@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -106,3 +107,58 @@
     background-image: linear-gradient(to bottom right, hsl(240, 5%, 10%), hsl(345, 10%, 15%), hsl(240, 5%, 5%));
   }
 }
+
+@layer components {
+  .custom-range {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 8px;
+    border-radius: 5px;
+    background-color: hsl(var(--primary) / 0.5); /* Antique Gold track */
+    outline: none;
+    background-image: linear-gradient(hsl(var(--secondary)), hsl(var(--secondary))); /* Burgundy fill */
+    background-size: var(--value, 0%) 100%;
+    background-repeat: no-repeat;
+  }
+
+  /* Thumb */
+  .custom-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: hsl(var(--muted-foreground)); /* Charcoal Gray thumb */
+    cursor: pointer;
+    transition: background .3s ease-in-out;
+  }
+
+  .custom-range::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: hsl(var(--muted-foreground));
+    cursor: pointer;
+    border: none;
+    transition: background .3s ease-in-out;
+  }
+
+  /* Hover */
+  .custom-range:hover::-webkit-slider-thumb {
+    background: hsl(var(--muted)); /* Dusty Rose on hover */
+  }
+  .custom-range:hover::-moz-range-thumb {
+    background: hsl(var(--muted));
+  }
+
+  /* Focus */
+  .custom-range:focus::-webkit-slider-thumb {
+     box-shadow: 0 0 0 3px hsl(var(--background)), 0 0 0 5px hsl(var(--ring));
+  }
+   .custom-range:focus::-moz-range-thumb {
+     box-shadow: 0 0 0 3px hsl(var(--background)), 0 0 0 5px hsl(var(--ring));
+  }
+}
+
+    
