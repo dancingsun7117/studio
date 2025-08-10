@@ -122,8 +122,17 @@
   }
   body {
     @apply bg-background text-foreground;
-    /* CSS Gradient: A timeless and luxurious feel */
-    background-image: linear-gradient(160deg, hsl(40 33% 97% / 0.95), hsl(350 45% 96% / 0.95) 40%, hsl(345 45% 80% / 0.5) 85%);
+    /* You can add your sticker URLs here, separated by commas */
+    /* Example: url('YOUR_STICKER_URL_1'), url('YOUR_STICKER_URL_2'), ... */
+    background-image: 
+      url('https://placehold.co/200x200.png'), /* Replace with your sticker URL */
+      url('https://placehold.co/150x150.png'), /* Replace with your sticker URL */
+      linear-gradient(160deg, hsl(40 33% 97% / 0.95), hsl(350 45% 96% / 0.95) 40%, hsl(345 45% 80% / 0.5) 85%);
+    background-repeat: no-repeat, no-repeat, no-repeat;
+    /* You can adjust the position of each sticker here */
+    background-position: top 10% left 5%, bottom 10% right 5%, center;
+    background-size: 200px, 150px, cover; /* Adjust size as needed */
+    background-attachment: fixed;
   }
   .bg-card {
     @apply bg-card/80 backdrop-blur-sm;
