@@ -36,6 +36,8 @@ interface DayData {
 }
 
 const SCHEDULE_STORAGE_KEY = 'planner_schedule_v1';
+const MONTHLY_FOCUS_STORAGE_KEY = 'planner_monthly_focus_v1';
+const MONTHLY_BUDGET_STORAGE_KEY = 'planner_monthly_budget_v1';
 
 export default function PlannerPage() {
   const [currentDate, setCurrentDate] = useState(new Date(2025, 0, 1));
@@ -44,10 +46,13 @@ export default function PlannerPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   
   const [schedule, setSchedule] = useState<Record<string, DayData>>({});
+  const [monthlyFocus, setMonthlyFocus] = useState<Record<string, string>>({});
+  const [monthlyBudget, setMonthlyBudget] = useState<Record<string, string>>({});
 
   const [newEvent, setNewEvent] = useState({ title: '', time: '' });
   const [newTodo, setNewTodo] = useState('');
 
+  // Load schedule from localStorage
   useEffect(() => {
     try {
       const savedSchedule = localStorage.getItem(SCHEDULE_STORAGE_KEY);
@@ -66,6 +71,7 @@ export default function PlannerPage() {
     }
   }, []);
 
+  // Save schedule to localStorage
   useEffect(() => {
     try {
         if (Object.keys(schedule).length > 0) {
@@ -75,6 +81,48 @@ export default function PlannerPage() {
         console.error("Failed to save schedule to localStorage", error);
     }
   }, [schedule]);
+  
+  // Load monthly focus from localStorage
+  useEffect(() => {
+    try {
+      const savedFocus = localStorage.getItem(MONTHLY_FOCUS_STORAGE_KEY);
+      if (savedFocus) {
+        setMonthlyFocus(JSON.parse(savedFocus));
+      }
+    } catch (error) {
+        console.error("Failed to load monthly focus from localStorage", error);
+    }
+  }, []);
+
+  // Save monthly focus to localStorage
+  useEffect(() => {
+    try {
+        localStorage.setItem(MONTHLY_FOCUS_STORAGE_KEY, JSON.stringify(monthlyFocus));
+    } catch (error) {
+        console.error("Failed to save monthly focus to localStorage", error);
+    }
+  }, [monthlyFocus]);
+  
+   // Load monthly budget from localStorage
+  useEffect(() => {
+    try {
+      const savedBudget = localStorage.getItem(MONTHLY_BUDGET_STORAGE_KEY);
+      if (savedBudget) {
+        setMonthlyBudget(JSON.parse(savedBudget));
+      }
+    } catch (error) {
+        console.error("Failed to load monthly budget from localStorage", error);
+    }
+  }, []);
+
+  // Save monthly budget to localStorage
+  useEffect(() => {
+    try {
+        localStorage.setItem(MONTHLY_BUDGET_STORAGE_KEY, JSON.stringify(monthlyBudget));
+    } catch (error) {
+        console.error("Failed to save monthly budget to localStorage", error);
+    }
+  }, [monthlyBudget]);
 
   const handleDateSelect = (date: Date | undefined) => {
     if (date) {
@@ -96,6 +144,18 @@ export default function PlannerPage() {
   };
 
   const getDayKey = (date: Date) => format(date, 'yyyy-MM-dd');
+  const getMonthKey = (date: Date) => format(date, 'yyyy-MM');
+
+  const handleMonthlyFocusChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const monthKey = getMonthKey(currentDate);
+    setMonthlyFocus(prev => ({ ...prev, [monthKey]: e.target.value }));
+  };
+  
+  const handleMonthlyBudgetChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const monthKey = getMonthKey(currentDate);
+    setMonthlyBudget(prev => ({ ...prev, [monthKey]: e.target.value }));
+  };
+
 
   const updateScheduleForDay = (dayKey: string, newDayData: DayData) => {
     setSchedule(prev => ({ ...prev, [dayKey]: newDayData }));
@@ -166,6 +226,7 @@ export default function PlannerPage() {
 
   const selectedDayKey = selectedDate ? getDayKey(selectedDate) : '';
   const selectedDayData = schedule[selectedDayKey] || { events: [], todos: [] };
+  const currentMonthKey = getMonthKey(currentDate);
   
   return (
     <div className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
@@ -213,11 +274,24 @@ export default function PlannerPage() {
         <div className="space-y-8">
             <Card>
                 <CardHeader><CardTitle className="font-headline text-accent">Monthly Focus</CardTitle></CardHeader>
-                <CardContent><Textarea placeholder="e.g., Master dynamic programming..." /></CardContent>
+                <CardContent>
+                    <Textarea 
+                        placeholder="e.g., Master dynamic programming..." 
+                        value={monthlyFocus[currentMonthKey] || ''}
+                        onChange={handleMonthlyFocusChange}
+                    />
+                </CardContent>
             </Card>
             <Card>
                 <CardHeader><CardTitle className="font-headline text-accent">Budget</CardTitle></CardHeader>
-                <CardContent><Input type="number" placeholder="e.g., $500" /></CardContent>
+                <CardContent>
+                    <Input 
+                        type="text"
+                        placeholder="e.g., $500" 
+                        value={monthlyBudget[currentMonthKey] || ''}
+                        onChange={handleMonthlyBudgetChange}
+                    />
+                </CardContent>
             </Card>
             <Card>
                 <CardHeader><CardTitle className="font-headline text-accent">Study Plan</CardTitle></CardHeader>
@@ -290,3 +364,4 @@ export default function PlannerPage() {
     </div>
   );
 }
+
