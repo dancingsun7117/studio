@@ -4,50 +4,50 @@
 
 @layer base {
   :root {
-    --background: 0 0% 2%; /* Deep Black */
-    --foreground: 0 0% 98%; /* White */
+    --background: 220 13% 18%; /* Charcoal Gray */
+    --foreground: 40 33% 97%; /* Ivory */
 
-    --card: 0 0% 6%; /* Slightly lighter black for cards */
-    --card-foreground: 0 0% 98%;
+    --card: 220 13% 22%; /* Slightly lighter Charcoal */
+    --card-foreground: 40 33% 97%;
 
-    --popover: 0 0% 4%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 220 13% 15%;
+    --popover-foreground: 40 33% 97%;
     
-    --primary: 45 84% 49%; /* Gold */
-    --primary-foreground: 45 84% 5%; /* Dark text for gold bg */
+    --primary: 46 51% 44%; /* Antique Gold */
+    --primary-foreground: 46 51% 10%;
     
-    --secondary: 345 75% 35%; /* Maroon */
+    --secondary: 350 40% 65%; /* Dusty Rose */
     --secondary-foreground: 0 0% 98%;
     
-    --muted: 0 0% 12%; /* Dark gray for muted elements */
-    --muted-foreground: 0 0% 64%;
+    --muted: 220 13% 30%;
+    --muted-foreground: 220 13% 70%;
     
-    --accent: 345 65% 45%; /* A brighter maroon for accents */
+    --accent: 210 50% 60%; /* Ocean Blue */
     --accent-foreground: 0 0% 98%;
     
     --destructive: 0 63% 31%;
     --destructive-foreground: 0 0% 98%;
     
-    --border: 0 0% 15%;
-    --input: 0 0% 15%;
-    --ring: 45 84% 49%; /* Gold for rings */
+    --border: 220 13% 35%;
+    --input: 220 13% 35%;
+    --ring: 46 51% 44%; /* Antique Gold for rings */
 
-    --chart-1: 45 84% 49%; /* Gold */
-    --chart-2: 345 65% 45%; /* Maroon */
-    --chart-3: 45 84% 65%; /* Lighter Gold */
-    --chart-4: 345 75% 35%; /* Darker Maroon */
-    --chart-5: 0 0% 64%; /* Gray */
+    --chart-1: 46 51% 44%;   /* Antique Gold */
+    --chart-2: 350 40% 65%;  /* Dusty Rose */
+    --chart-3: 210 50% 60%;  /* Ocean Blue */
+    --chart-4: 46 51% 64%;   /* Lighter Gold */
+    --chart-5: 0 0% 64%;     /* Gray */
     
     --radius: 0.5rem;
 
-    --sidebar-background: 0 0% 4%; /* Slightly lighter black for sidebar */
-    --sidebar-foreground: 0 0% 98%;
-    --sidebar-primary: 45 84% 49%; /* Gold */
-    --sidebar-primary-foreground: 45 84% 5%;
-    --sidebar-accent: 345 65% 30%; /* Darker maroon for sidebar accent */
+    --sidebar-background: 220 13% 15%; /* Darker Charcoal */
+    --sidebar-foreground: 40 33% 97%;
+    --sidebar-primary: 46 51% 44%;
+    --sidebar-primary-foreground: 46 51% 10%;
+    --sidebar-accent: 210 50% 50%;
     --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 0 0% 15%;
-    --sidebar-ring: 45 84% 49%;
+    --sidebar-border: 220 13% 25%;
+    --sidebar-ring: 46 51% 44%;
   }
 }
 
@@ -56,18 +56,18 @@
     @apply border-border;
   }
   body {
-    @apply bg-gradient-to-br from-black to-zinc-900 text-foreground;
+    @apply bg-gradient-to-br from-background to-slate-900 text-foreground;
   }
   .bg-card {
-     @apply bg-gradient-to-br from-zinc-900 to-black border border-zinc-800;
+     @apply bg-gradient-to-br from-slate-900/50 to-background border border-border;
   }
   .bg-primary {
-    @apply bg-gradient-to-r from-yellow-500 to-amber-600;
+    @apply bg-gradient-to-r from-yellow-600 to-amber-700;
   }
   .bg-secondary {
-    @apply bg-gradient-to-r from-red-800 to-rose-900;
+    @apply bg-gradient-to-r from-rose-400 to-pink-500;
   }
   .bg-accent {
-    @apply bg-gradient-to-r from-red-700 to-rose-800;
+    @apply bg-gradient-to-r from-blue-500 to-cyan-600;
   }
 }
