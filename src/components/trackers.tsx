@@ -503,10 +503,10 @@ export function TrackersView() {
                                     <h3 className="font-headline text-lg text-accent">Workout Log</h3>
                                     <Card>
                                         <CardContent className="p-4 space-y-4">
-                                            <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto_auto_auto] gap-2 items-center">
-                                                <Input placeholder="Activity" value={newWorkout.activity} onChange={e => setNewWorkout({...newWorkout, activity: e.target.value})} className="min-w-[100px]" />
-                                                <Input placeholder="Duration" className="min-w-[80px]" value={newWorkout.duration} onChange={e => setNewWorkout({...newWorkout, duration: e.target.value})} />
-                                                <Input type="date" className="min-w-[120px]" value={newWorkout.date} onChange={e => setNewWorkout({...newWorkout, date: e.target.value})} />
+                                            <div className="flex flex-wrap gap-2 items-center">
+                                                <Input placeholder="Activity" value={newWorkout.activity} onChange={e => setNewWorkout({...newWorkout, activity: e.target.value})} className="flex-1 min-w-[120px]" />
+                                                <Input placeholder="Duration" className="w-28" value={newWorkout.duration} onChange={e => setNewWorkout({...newWorkout, duration: e.target.value})} />
+                                                <Input type="date" className="w-auto" value={newWorkout.date} onChange={e => setNewWorkout({...newWorkout, date: e.target.value})} />
                                                 <Button onClick={addWorkout} size="icon" className="flex-shrink-0"><PlusCircle className="h-4 w-4" /></Button>
                                             </div>
                                             <div className="max-h-32 overflow-y-auto space-y-2 pr-2">
@@ -786,6 +786,8 @@ export function TrackersView() {
         </Tabs>
     );
 }
+
+    
 
     
 
