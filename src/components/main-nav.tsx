@@ -9,6 +9,7 @@ import {
   LayoutDashboard,
   Sparkles,
   Target,
+  Lightbulb,
 } from 'lucide-react';
 
 import {
@@ -27,6 +28,7 @@ const navItems = [
   { href: '/planner', icon: CalendarDays, label: 'Academic Planner' },
   { href: '/motivation', icon: Sparkles, label: 'Motivation' },
   { href: '/notes', icon: BookText, label: 'Notes' },
+  { href: '/ideas', icon: Lightbulb, label: 'Ideas' },
 ];
 
 export function MainNav() {
