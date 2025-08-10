@@ -4,39 +4,48 @@
 
 @layer base {
   :root {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 240 10% 3.9%;
+    --background: 0 0% 2%; /* Deep Black */
+    --foreground: 0 0% 98%; /* White */
+    --card: 0 0% 6%; /* Slightly lighter black for cards */
     --card-foreground: 0 0% 98%;
-    --popover: 240 10% 3.9%;
+    --popover: 0 0% 4%;
     --popover-foreground: 0 0% 98%;
-    --primary: 45 90% 55%;
-    --primary-foreground: 45 90% 5%;
-    --secondary: 0 50% 30%;
+    
+    --primary: 45 84% 49%; /* Gold */
+    --primary-foreground: 45 84% 5%; /* Dark text for gold bg */
+    
+    --secondary: 0 50% 30%; /* Maroon */
     --secondary-foreground: 0 0% 98%;
-    --muted: 240 5% 15%;
-    --muted-foreground: 240 5% 65%;
-    --accent: 0 75% 40%;
+    
+    --muted: 0 0% 12%; /* Dark gray for muted elements */
+    --muted-foreground: 0 0% 64%;
+    
+    --accent: 0 65% 45%; /* A brighter maroon for accents */
     --accent-foreground: 0 0% 98%;
+    
     --destructive: 0 63% 31%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 5% 15%;
-    --input: 240 5% 15%;
-    --ring: 45 90% 55%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+    
+    --border: 0 0% 15%;
+    --input: 0 0% 15%;
+    --ring: 45 84% 49%; /* Gold for rings */
+
+    --chart-1: 45 84% 49%; /* Gold */
+    --chart-2: 0 65% 45%; /* Maroon */
+    --chart-3: 45 84% 65%; /* Lighter Gold */
+    --chart-4: 0 50% 30%; /* Darker Maroon */
+    --chart-5: 0 0% 64%; /* Gray */
+    
     --radius: 0.5rem;
-    --sidebar-background: 240 10% 2.5%;
+
+    --sidebar-background: 0 0% 4%; /* Slightly lighter black for sidebar */
     --sidebar-foreground: 0 0% 98%;
-    --sidebar-primary: 45 90% 55%;
-    --sidebar-primary-foreground: 45 90% 5%;
-    --sidebar-accent: 0 75% 20%;
+    --sidebar-primary: 45 84% 49%; /* Gold */
+    --sidebar-primary-foreground: 45 84% 5%;
+    --sidebar-accent: 0 65% 30%; /* Darker maroon for sidebar accent */
     --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 240 5% 15%;
-    --sidebar-ring: 45 90% 55%;
+    --sidebar-border: 0 0% 15%;
+    --sidebar-ring: 45 84% 49%;
   }
 }
 
