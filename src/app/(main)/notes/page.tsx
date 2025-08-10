@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Palette, Eraser, Trash2, Undo, Redo } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Slider } from '@/components/ui/slider';
+import { Input } from '@/components/ui/input';
 
 const NOTES_STORAGE_KEY = 'notes_content_v1';
 
@@ -14,7 +15,7 @@ export default function NotesPage() {
   const [notes, setNotes] = useState('');
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
-  const [color, setColor] = useState('#000000');
+  const [color, setColor] = useState('#B8860B');
   const [brushSize, setBrushSize] = useState(5);
   const [history, setHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
