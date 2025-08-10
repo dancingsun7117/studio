@@ -4,6 +4,53 @@
 
 @layer base {
   :root {
+    --background: 350 45% 96%; /* Light Dusty Rose */
+    --foreground: 350 15% 25%; /* Dark Muted Dusty Rose */
+
+    --card: 350 40% 92%; /* Slightly darker Dusty Rose */
+    --card-foreground: 350 15% 25%;
+
+    --popover: 350 45% 98%;
+    --popover-foreground: 350 15% 25%;
+    
+    --primary: 46 51% 44%; /* Antique Gold */
+    --primary-foreground: 46 51% 10%;
+    
+    --secondary: 210 50% 60%; /* Ocean Blue */
+    --secondary-foreground: 0 0% 98%;
+    
+    --muted: 350 30% 88%;
+    --muted-foreground: 350 15% 45%;
+    
+    --accent: 40 33% 97%; /* Ivory */
+    --accent-foreground: 350 15% 25%;
+    
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 0 0% 98%;
+    
+    --border: 350 30% 80%;
+    --input: 350 30% 80%;
+    --ring: 46 51% 44%; /* Antique Gold for rings */
+
+    --chart-1: 46 51% 44%;   /* Antique Gold */
+    --chart-2: 350 40% 65%;  /* Dusty Rose */
+    --chart-3: 210 50% 60%;  /* Ocean Blue */
+    --chart-4: 46 51% 64%;   /* Lighter Gold */
+    --chart-5: 0 0% 64%;     /* Gray */
+    
+    --radius: 0.5rem;
+
+    --sidebar-background: 350 25% 20%; /* Dark Dusty Rose/Maroon */
+    --sidebar-foreground: 40 33% 97%; /* Ivory */
+    --sidebar-primary: 46 51% 44%; /* Antique Gold */
+    --sidebar-primary-foreground: 46 51% 10%;
+    --sidebar-accent: 210 50% 50%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 350 25% 30%;
+    --sidebar-ring: 46 51% 44%;
+  }
+
+  .dark {
     --background: 220 13% 18%; /* Charcoal Gray */
     --foreground: 40 33% 97%; /* Ivory */
 
@@ -37,8 +84,6 @@
     --chart-3: 210 50% 60%;  /* Ocean Blue */
     --chart-4: 46 51% 64%;   /* Lighter Gold */
     --chart-5: 0 0% 64%;     /* Gray */
-    
-    --radius: 0.5rem;
 
     --sidebar-background: 220 13% 15%; /* Darker Charcoal */
     --sidebar-foreground: 40 33% 97%;
@@ -56,10 +101,10 @@
     @apply border-border;
   }
   body {
-    @apply bg-gradient-to-br from-background to-slate-900 text-foreground;
+    @apply bg-gradient-to-br from-background to-rose-50/50 text-foreground;
   }
   .bg-card {
-     @apply bg-gradient-to-br from-slate-900/50 to-background border border-border;
+     @apply bg-gradient-to-br from-rose-100/50 to-background border border-border;
   }
   .bg-primary {
     @apply bg-gradient-to-r from-yellow-600 to-amber-700;
