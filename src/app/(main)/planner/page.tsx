@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -5,7 +6,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, PlusCircle, Trash2 } from 'lucide-react';
-import { addMonths, subMonths, format } from 'date-fns';
+import { addDays, addMonths, subMonths, format } from 'date-fns';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from '@/components/ui/dialog';
@@ -100,9 +101,9 @@ export default function PlannerPage() {
     setSchedule(prev => ({ ...prev, [dayKey]: newDayData }));
   };
 
-  const addEventToSchedule = () => {
-    if (!selectedDate || !newEvent.title) return;
-    const dayKey = getDayKey(selectedDate);
+  const addEventToDate = (date: Date) => {
+    if (!newEvent.title) return;
+    const dayKey = getDayKey(date);
     const dayData = schedule[dayKey] || { events: [], todos: [] };
     const updatedDayData = {
       ...dayData,
@@ -110,6 +111,17 @@ export default function PlannerPage() {
     };
     updateScheduleForDay(dayKey, updatedDayData);
     setNewEvent({ title: '', time: '' });
+  }
+
+  const addEventToSchedule = () => {
+    if (!selectedDate) return;
+    addEventToDate(selectedDate);
+  };
+  
+  const addEventForNextDay = () => {
+    if (!selectedDate) return;
+    const nextDay = addDays(selectedDate, 1);
+    addEventToDate(nextDay);
   };
   
   const addTodoToSchedule = () => {
@@ -241,7 +253,12 @@ export default function PlannerPage() {
                          <div className="mt-4 flex gap-2">
                             <Input value={newEvent.title} onChange={e => setNewEvent({...newEvent, title: e.target.value})} placeholder="Event Title" />
                             <Input value={newEvent.time} onChange={e => setNewEvent({...newEvent, time: e.target.value})} placeholder="Time" className="w-28" />
-                            <Button onClick={addEventToSchedule} size="icon"><PlusCircle className="h-4 w-4"/></Button>
+                            <Button onClick={addEventToSchedule} size="icon" title="Add to selected date"><PlusCircle className="h-4 w-4"/></Button>
+                        </div>
+                        <div className="mt-2">
+                            <Button onClick={addEventForNextDay} variant="outline" size="sm" className="w-full">
+                                Add for Next Day ({selectedDate ? format(addDays(selectedDate, 1), 'LLL d') : ''})
+                            </Button>
                         </div>
                     </div>
                      <div>
