@@ -4,26 +4,29 @@
 import { useState, useRef, useEffect } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { Palette, Eraser, Trash2, Undo, Redo, PlusCircle, FileText } from 'lucide-react';
+import { Palette, Eraser, Trash2, Undo, Redo, PlusCircle, FileText, Upload, Trash } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Slider } from '@/components/ui/slider';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
+import Image from 'next/image';
 
-const NOTES_PAGES_STORAGE_KEY = 'notes_pages_v2';
+const NOTES_PAGES_STORAGE_KEY = 'notes_pages_v3';
 
 interface NotePageData {
   id: number;
   title: string;
   content: string;
   drawing: string | null;
+  image: string | null;
 }
 
 const initialPage: NotePageData = {
     id: 1,
     title: "My First Note",
     content: "Start typing your master plan...",
-    drawing: null
+    drawing: null,
+    image: null,
 };
 
 export default function NotesPage() {
@@ -31,6 +34,7 @@ export default function NotesPage() {
   const [activePageId, setActivePageId] = useState<number | null>(1);
   
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [color, setColor] = useState('#B8860B');
   const [brushSize, setBrushSize] = useState(5);
@@ -70,8 +74,11 @@ export default function NotesPage() {
 
   // Load canvas drawing for active page
   useEffect(() => {
+    if (!isClient || !activePage || !canvasRef.current) return;
+
     const canvas = canvasRef.current;
-    if (!canvas || !activePage) return;
+    if (activePage.image) return; // Don't initialize canvas if there's an image
+
     const context = canvas.getContext('2d');
     if (!context) return;
 
@@ -93,7 +100,7 @@ export default function NotesPage() {
        saveToHistory(canvas.toDataURL(), true);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activePageId, isClient]);
+  }, [activePage, isClient]);
 
   const updatePageData = (pageId: number, updates: Partial<NotePageData>) => {
     setPages(pages.map(p => p.id === pageId ? { ...p, ...updates } : p));
@@ -115,7 +122,8 @@ export default function NotesPage() {
         id: newId,
         title: `New Note ${pages.length + 1}`,
         content: '',
-        drawing: null
+        drawing: null,
+        image: null
     };
     setPages([...pages, newPage]);
     setActivePageId(newId);
@@ -162,6 +170,7 @@ export default function NotesPage() {
   };
 
   const startDrawing = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    if (activePage?.image) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const context = canvas.getContext('2d');
@@ -178,7 +187,7 @@ export default function NotesPage() {
   };
 
   const draw = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (!isDrawing) return;
+    if (!isDrawing || activePage?.image) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const context = canvas.getContext('2d');
@@ -190,6 +199,7 @@ export default function NotesPage() {
   };
 
   const stopDrawing = () => {
+    if (activePage?.image) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const context = canvas.getContext('2d');
@@ -203,6 +213,7 @@ export default function NotesPage() {
   };
   
   const clearCanvas = () => {
+    if (activePage?.image) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const context = canvas.getContext('2d');
@@ -215,6 +226,7 @@ export default function NotesPage() {
   };
 
   const applyHistoryState = (index: number) => {
+     if (activePage?.image) return;
      const canvas = canvasRef.current;
       const context = canvas?.getContext('2d');
       if (canvas && context) {
@@ -241,6 +253,28 @@ export default function NotesPage() {
       const newIndex = historyIndex + 1;
       setHistoryIndex(newIndex);
       applyHistoryState(newIndex);
+    }
+  };
+
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file && activePageId) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result as string;
+        updatePageData(activePageId, { image: base64String, drawing: null });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const triggerImageUpload = () => {
+    fileInputRef.current?.click();
+  };
+
+  const removeImage = () => {
+    if (activePageId) {
+      updatePageData(activePageId, { image: null });
     }
   };
 
@@ -302,42 +336,66 @@ export default function NotesPage() {
               </div>
               <div className="space-y-4">
                 <h2 className="font-headline text-2xl font-bold text-primary">Mood Board</h2>
-                <div className="relative aspect-video w-full rounded-lg border bg-muted/20 overflow-hidden" data-ai-hint="canvas drawing">
-                      {isClient && (
-                          <canvas
-                              ref={canvasRef}
-                              width={800}
-                              height={450}
-                              className="absolute top-0 left-0 h-full w-full"
-                              onMouseDown={startDrawing}
-                              onMouseMove={draw}
-                              onMouseUp={stopDrawing}
-                              onMouseLeave={stopDrawing}
-                          />
-                      )}
-                      <div className="absolute top-2 right-2 flex gap-1">
-                        <Button variant="outline" size="icon" onClick={undo} disabled={historyIndex <= 0}><Undo className="h-4 w-4"/></Button>
-                        <Button variant="outline" size="icon" onClick={redo} disabled={historyIndex >= history.length - 1}><Redo className="h-4 w-4"/></Button>
-                          <Popover>
-                              <PopoverTrigger asChild>
-                                  <Button variant="outline" size="icon"><Palette className="h-4 w-4"/></Button>
-                              </PopoverTrigger>
-                              <PopoverContent className="w-64">
-                                  <div className="space-y-4">
-                                      <div className="space-y-2">
-                                          <label className="text-sm font-medium">Color</label>
-                                          <Input type="color" value={color} onChange={e => setColor(e.target.value)} className="w-full h-10 p-1" />
-                                      </div>
-                                      <div className="space-y-2">
-                                          <label className="text-sm font-medium">Brush Size</label>
-                                          <Slider value={[brushSize]} onValueChange={value => setBrushSize(value[0])} min={1} max={50} step={1} />
-                                      </div>
-                                  </div>
-                              </PopoverContent>
-                          </Popover>
-                          <Button variant="outline" size="icon" onClick={() => setColor('#FFFFFF')}><Eraser className="h-4 w-4"/></Button>
-                          <Button variant="destructive" size="icon" onClick={clearCanvas}><Trash2 className="h-4 w-4"/></Button>
-                      </div>
+                <div className="relative aspect-video w-full rounded-lg border bg-muted/20 overflow-hidden group" data-ai-hint="canvas drawing">
+                    <input 
+                        type="file"
+                        ref={fileInputRef}
+                        onChange={handleImageUpload}
+                        accept="image/*"
+                        className="hidden"
+                    />
+                    {activePage.image ? (
+                        <>
+                            <Image src={activePage.image} alt="Note mood board" layout="fill" objectFit="cover" className="rounded-lg" />
+                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4 rounded-lg">
+                                <Button onClick={triggerImageUpload} variant="outline" size="icon" title="Change Image">
+                                    <Upload className="h-5 w-5"/>
+                                </Button>
+                                <Button onClick={removeImage} variant="destructive" size="icon" title="Remove Image">
+                                    <Trash className="h-5 w-5"/>
+                                </Button>
+                            </div>
+                        </>
+                    ) : (
+                        <>
+                            {isClient && (
+                                <canvas
+                                    ref={canvasRef}
+                                    width={800}
+                                    height={450}
+                                    className="absolute top-0 left-0 h-full w-full"
+                                    onMouseDown={startDrawing}
+                                    onMouseMove={draw}
+                                    onMouseUp={stopDrawing}
+                                    onMouseLeave={stopDrawing}
+                                />
+                            )}
+                            <div className="absolute top-2 right-2 flex gap-1">
+                                <Button variant="outline" size="icon" onClick={triggerImageUpload} title="Upload Image"><Upload className="h-4 w-4"/></Button>
+                                <Button variant="outline" size="icon" onClick={undo} disabled={historyIndex <= 0}><Undo className="h-4 w-4"/></Button>
+                                <Button variant="outline" size="icon" onClick={redo} disabled={historyIndex >= history.length - 1}><Redo className="h-4 w-4"/></Button>
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <Button variant="outline" size="icon"><Palette className="h-4 w-4"/></Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-64">
+                                        <div className="space-y-4">
+                                            <div className="space-y-2">
+                                                <label className="text-sm font-medium">Color</label>
+                                                <Input type="color" value={color} onChange={e => setColor(e.target.value)} className="w-full h-10 p-1" />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-sm font-medium">Brush Size</label>
+                                                <Slider value={[brushSize]} onValueChange={value => setBrushSize(value[0])} min={1} max={50} step={1} />
+                                            </div>
+                                        </div>
+                                    </PopoverContent>
+                                </Popover>
+                                <Button variant="outline" size="icon" onClick={() => setColor('#FFFFFF')}><Eraser className="h-4 w-4"/></Button>
+                                <Button variant="destructive" size="icon" onClick={clearCanvas}><Trash2 className="h-4 w-4"/></Button>
+                            </div>
+                        </>
+                    )}
                 </div>
               </div>
             </>
