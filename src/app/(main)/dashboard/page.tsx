@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Crown, GitCommit, BrainCircuit, Star } from 'lucide-react';
+import { Crown, GitCommit, BrainCircuit, Star, GlassWater, Apple, Dumbbell, BookOpen, Sparkles, Smile, Heart } from 'lucide-react';
 import { useQuote } from '@/context/QuoteContext';
 
 const quotes = [
@@ -17,6 +17,16 @@ const quotes = [
     icon: BrainCircuit,
     text: "Every line of code is a step away from average.",
   },
+];
+
+const reminders = [
+    { icon: GlassWater, text: "Drink Water", color: "text-blue-400" },
+    { icon: Apple, text: "Eat Healthy", color: "text-green-400" },
+    { icon: Dumbbell, text: "Stay Active", color: "text-red-400" },
+    { icon: BookOpen, text: "Study Smart", color: "text-yellow-400" },
+    { icon: Sparkles, text: "Be Confident", color: "text-pink-400" },
+    { icon: Smile, text: "Stay Positive", color: "text-indigo-400" },
+    { icon: Heart, text: "You Are Beautiful", color: "text-purple-400" },
 ];
 
 export default function DashboardPage() {
@@ -46,6 +56,20 @@ export default function DashboardPage() {
           </p>
         </CardContent>
       </Card>
+      
+      <div>
+        <h2 className="font-headline text-2xl font-bold text-primary mb-4">Daily Reminders</h2>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-7">
+            {reminders.map((reminder, index) => (
+              <Card key={index} className="border-accent/30 bg-accent/10 flex flex-col items-center justify-center p-4 text-center">
+                  <reminder.icon className={`h-8 w-8 mb-2 ${reminder.color}`} />
+                  <p className="font-body font-semibold text-foreground">
+                      {reminder.text}
+                  </p>
+              </Card>
+            ))}
+        </div>
+      </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {quotes.map((quote, index) => (
