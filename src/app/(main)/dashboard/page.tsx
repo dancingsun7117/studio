@@ -2,25 +2,10 @@
 
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Crown, GitCommit, BrainCircuit, Star, GlassWater, Apple, Dumbbell, BookOpen, Sparkles, Smile, Heart, PlusCircle, Trash2 } from 'lucide-react';
+import { Star, GlassWater, Apple, Dumbbell, BookOpen, Sparkles, Smile, Heart, PlusCircle, Trash2 } from 'lucide-react';
 import { useQuote } from '@/context/QuoteContext';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-
-const quotes = [
-  {
-    icon: Crown,
-    text: "Code like a queen, debug like a don.",
-  },
-  {
-    icon: GitCommit,
-    text: "Git commit. Girl boss. Repeat.",
-  },
-  {
-    icon: BrainCircuit,
-    text: "Every line of code is a step away from average.",
-  },
-];
 
 const initialReminders = [
     { id: 1, icon: GlassWater, text: "Drink Water", color: "text-blue-400" },
@@ -126,23 +111,6 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {quotes.map((quote, index) => (
-          <Card key={index} className="border-accent/30 bg-accent/10">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium font-body">
-                Daily Affirmation
-              </CardTitle>
-              <quote.icon className="h-5 w-5 text-accent" />
-            </CardHeader>
-            <CardContent>
-              <p className="text-xl font-bold font-headline text-foreground">
-                {quote.text}
-              </p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
        <Card className="mt-4">
         <CardHeader>
           <CardTitle className="font-headline text-2xl text-primary">Personal Mission</CardTitle>
