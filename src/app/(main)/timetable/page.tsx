@@ -9,6 +9,7 @@ import { CalendarClock } from 'lucide-react';
 const TIMETABLE_STORAGE_KEY = 'weekly_timetable_v1';
 
 const timeSlots = [
+  '08:00 - 09:00',
   '09:00 - 10:00',
   '10:00 - 11:00',
   '11:00 - 12:00',
@@ -17,6 +18,7 @@ const timeSlots = [
   '14:00 - 15:00',
   '15:00 - 16:00',
   '16:00 - 17:00',
+  '17:00 - 18:00',
 ];
 
 const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
