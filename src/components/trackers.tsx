@@ -598,7 +598,7 @@ export function TrackersView() {
                             </Card>
                             <div className="space-y-6 pt-4">
                                 {skills.map((skill, index) => (
-                                    <div key={index} className="grid grid-cols-1 md:grid-cols-[150px_1fr_auto] items-center gap-4 group">
+                                    <div key={index} className="grid grid-cols-1 md:grid-cols-[200px_1fr_auto] items-center gap-4 group">
                                         <Input
                                             value={skill.name}
                                             onChange={(e) => handleSkillNameChange(index, e.target.value)}
@@ -612,7 +612,7 @@ export function TrackersView() {
                                                 step="1"
                                                 value={skill.value}
                                                 onChange={(e) => handleSkillChange(index, parseInt(e.target.value))}
-                                                className="w-full custom-range"
+                                                className="custom-range"
                                                 style={{'--value': `${skill.value}%`} as React.CSSProperties}
                                             />
                                             <span className="text-sm font-medium text-primary w-12 text-right">{skill.value}%</span>
@@ -787,8 +787,6 @@ export function TrackersView() {
         </Tabs>
     );
 }
-
-    
 
     
 
