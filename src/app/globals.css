@@ -6,21 +6,23 @@
   :root {
     --background: 0 0% 2%; /* Deep Black */
     --foreground: 0 0% 98%; /* White */
+
     --card: 0 0% 6%; /* Slightly lighter black for cards */
     --card-foreground: 0 0% 98%;
+
     --popover: 0 0% 4%;
     --popover-foreground: 0 0% 98%;
     
     --primary: 45 84% 49%; /* Gold */
     --primary-foreground: 45 84% 5%; /* Dark text for gold bg */
     
-    --secondary: 0 50% 30%; /* Maroon */
+    --secondary: 345 75% 35%; /* Maroon */
     --secondary-foreground: 0 0% 98%;
     
     --muted: 0 0% 12%; /* Dark gray for muted elements */
     --muted-foreground: 0 0% 64%;
     
-    --accent: 0 65% 45%; /* A brighter maroon for accents */
+    --accent: 345 65% 45%; /* A brighter maroon for accents */
     --accent-foreground: 0 0% 98%;
     
     --destructive: 0 63% 31%;
@@ -31,9 +33,9 @@
     --ring: 45 84% 49%; /* Gold for rings */
 
     --chart-1: 45 84% 49%; /* Gold */
-    --chart-2: 0 65% 45%; /* Maroon */
+    --chart-2: 345 65% 45%; /* Maroon */
     --chart-3: 45 84% 65%; /* Lighter Gold */
-    --chart-4: 0 50% 30%; /* Darker Maroon */
+    --chart-4: 345 75% 35%; /* Darker Maroon */
     --chart-5: 0 0% 64%; /* Gray */
     
     --radius: 0.5rem;
@@ -42,7 +44,7 @@
     --sidebar-foreground: 0 0% 98%;
     --sidebar-primary: 45 84% 49%; /* Gold */
     --sidebar-primary-foreground: 45 84% 5%;
-    --sidebar-accent: 0 65% 30%; /* Darker maroon for sidebar accent */
+    --sidebar-accent: 345 65% 30%; /* Darker maroon for sidebar accent */
     --sidebar-accent-foreground: 0 0% 98%;
     --sidebar-border: 0 0% 15%;
     --sidebar-ring: 45 84% 49%;
@@ -54,6 +56,18 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-gradient-to-br from-black to-zinc-900 text-foreground;
+  }
+  .bg-card {
+     @apply bg-gradient-to-br from-zinc-900 to-black border border-zinc-800;
+  }
+  .bg-primary {
+    @apply bg-gradient-to-r from-yellow-500 to-amber-600;
+  }
+  .bg-secondary {
+    @apply bg-gradient-to-r from-red-800 to-rose-900;
+  }
+  .bg-accent {
+    @apply bg-gradient-to-r from-red-700 to-rose-800;
   }
 }

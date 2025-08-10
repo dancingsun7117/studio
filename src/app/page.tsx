@@ -13,13 +13,13 @@ export default function CoverPage() {
         <h1 className="font-headline text-5xl md:text-7xl lg:text-8xl font-bold text-primary animate-fade-in-down">
           Neeshna&apos;s Codex
         </h1>
-        <p className="mt-6 max-w-2xl font-body text-lg italic text-foreground/80 animate-fade-in-up">
+        <p className="mt-6 max-w-2xl font-body text-lg italic text-foreground/80 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
           “In a world full of noise, she codes in silence and conquers in power.”
         </p>
-        <p className="mt-2 font-body text-sm text-foreground/60">
+        <p className="mt-2 font-body text-sm text-foreground/60 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
           2025 – 2029
         </p>
-        <Button asChild className="mt-12 group animate-fade-in-up" size="lg" variant="outline">
+        <Button asChild className="mt-12 group animate-fade-in-up" style={{ animationDelay: '0.4s' }} size="lg" variant="outline">
           <Link href="/dashboard">
             Enter The Codex
             <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
