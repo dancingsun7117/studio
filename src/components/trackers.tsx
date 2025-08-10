@@ -7,7 +7,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Progress } from '@/components/ui/progress';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, Clock, DollarSign, GitBranch, GraduationCap, Trophy, Users, Briefcase } from 'lucide-react';
+import { CheckCircle, DollarSign, GitBranch, GraduationCap, Trophy, Users, Briefcase, Target } from 'lucide-react';
 
 const trackerSections = [
     { value: 'habits', label: 'Habit Tracker', icon: CheckCircle },
