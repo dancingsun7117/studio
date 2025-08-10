@@ -42,7 +42,7 @@ export function MainNav() {
             <Gem className="h-6 w-6 text-primary" />
           </div>
           <span className="font-headline text-2xl font-bold text-primary">
-            Neeshna&apos;s Codex
+            Planner 25-29
           </span>
         </div>
       </SidebarHeader>

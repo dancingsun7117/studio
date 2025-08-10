@@ -11,7 +11,7 @@ export default function CoverPage() {
 
       <div className="relative z-10 flex flex-col items-center text-center p-4">
         <h1 className="font-headline text-5xl md:text-7xl lg:text-8xl font-bold text-primary animate-fade-in-down">
-          Neeshna&apos;s Codex
+          Planner 25-29
         </h1>
         <p className="mt-6 max-w-2xl font-body text-lg italic text-foreground/80 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
           “In a world full of noise, she codes in silence and conquers in power.”
@@ -21,7 +21,7 @@ export default function CoverPage() {
         </p>
         <Button asChild className="mt-12 group animate-fade-in-up" style={{ animationDelay: '0.4s' }} size="lg" variant="outline">
           <Link href="/dashboard">
-            Enter The Codex
+            Enter The Planner
             <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
           </Link>
         </Button>

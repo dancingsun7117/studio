@@ -97,7 +97,7 @@ export default function DashboardPage() {
     <div className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
       <div className="max-w-4xl">
         <h1 className="font-headline text-4xl font-bold text-primary">
-          Welcome, Neeshna
+          Welcome
         </h1>
         <p className="mt-2 text-lg text-muted-foreground">
           This is your command center. Track your progress, plan your conquests, and build your empire, one line of code at a time.

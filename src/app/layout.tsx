@@ -3,8 +3,8 @@ import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 
 export const metadata: Metadata = {
-  title: "Neeshna's Codex",
-  description: 'A digital planner for the modern coding queen with a dark academia aesthetic.',
+  title: "Planner 25-29",
+  description: 'A digital planner for 2025-2029.',
 };
 
 export default function RootLayout({
