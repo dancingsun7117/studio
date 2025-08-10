@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -87,10 +87,75 @@ const initialHealthData = {
     ]
 };
 
+const TRACKERS_STORAGE_KEY_PREFIX = 'trackers_v1_';
+
 export function TrackersView() {
-    // State for Habit Tracker
     const [habits, setHabits] = useState(initialHabits);
     const [newHabit, setNewHabit] = useState('');
+    
+    const [goals, setGoals] = useState(initialGoals);
+    const [newGoal, setNewGoal] = useState({text: '', category: 'Academic'});
+    
+    const [healthData, setHealthData] = useState(initialHealthData);
+    const [newWorkout, setNewWorkout] = useState({ activity: '', duration: '', date: ''});
+    const [newHygieneItem, setNewHygieneItem] = useState('');
+
+    const [semesters, setSemesters] = useState(initialSemesters);
+    const [cgpa, setCgpa] = useState({current: '8.5', goal: '9.0'});
+    
+    const [skills, setSkills] = useState(initialSkills);
+    const [newSkill, setNewSkill] = useState({name: '', value: 50});
+    
+    const [transactions, setTransactions] = useState(initialTransactions);
+    const [newTransaction, setNewTransaction] = useState({ description: '', amount: '', type: 'expense' as const });
+    
+    const [experience, setExperience] = useState(initialExperience);
+    
+    const [involvement, setInvolvement] = useState(initialInvolvement);
+    
+    const [placementPrep, setPlacementPrep] = useState(initialPlacementPrep);
+    const [newPrepItem, setNewPrepItem] = useState('');
+
+    const stateMap: Record<string, [any, React.Dispatch<any>]> = {
+        habits: [habits, setHabits],
+        goals: [goals, setGoals],
+        health: [healthData, setHealthData],
+        cgpaState: [{semesters, cgpa}, (val: any) => { setSemesters(val.semesters); setCgpa(val.cgpa); }],
+        skills: [skills, setSkills],
+        finance: [transactions, setTransactions],
+        experience: [experience, setExperience],
+        events: [involvement, setInvolvement],
+        placement: [placementPrep, setPlacementPrep]
+    };
+
+    useEffect(() => {
+        Object.keys(stateMap).forEach(key => {
+            try {
+                const savedState = localStorage.getItem(`${TRACKERS_STORAGE_KEY_PREFIX}${key}`);
+                if (savedState) {
+                    stateMap[key][1](JSON.parse(savedState));
+                }
+            } catch (error) {
+                console.error(`Failed to parse ${key} from localStorage`, error);
+            }
+        });
+    }, []);
+
+    useEffect(() => {
+        try {
+            localStorage.setItem(`${TRACKERS_STORAGE_KEY_PREFIX}habits`, JSON.stringify(habits));
+            localStorage.setItem(`${TRACKERS_STORAGE_KEY_PREFIX}goals`, JSON.stringify(goals));
+            localStorage.setItem(`${TRACKERS_STORAGE_KEY_PREFIX}health`, JSON.stringify(healthData));
+            localStorage.setItem(`${TRACKERS_STORAGE_KEY_PREFIX}cgpaState`, JSON.stringify({semesters, cgpa}));
+            localStorage.setItem(`${TRACKERS_STORAGE_KEY_PREFIX}skills`, JSON.stringify(skills));
+            localStorage.setItem(`${TRACKERS_STORAGE_KEY_PREFIX}finance`, JSON.stringify(transactions));
+            localStorage.setItem(`${TRACKERS_STORAGE_KEY_PREFIX}experience`, JSON.stringify(experience));
+            localStorage.setItem(`${TRACKERS_STORAGE_KEY_PREFIX}events`, JSON.stringify(involvement));
+            localStorage.setItem(`${TRACKERS_STORAGE_KEY_PREFIX}placement`, JSON.stringify(placementPrep));
+        } catch (error) {
+            console.error("Failed to save trackers to localStorage", error);
+        }
+    }, [habits, goals, healthData, semesters, cgpa, skills, transactions, experience, involvement, placementPrep]);
 
     const toggleHabit = (habitIndex: number, dayIndex: number) => {
         const newHabits = [...habits];
@@ -116,9 +181,6 @@ export function TrackersView() {
     }
 
     // State for CGPA Tracker
-    const [semesters, setSemesters] = useState(initialSemesters);
-    const [cgpa, setCgpa] = useState({current: '8.5', goal: '9.0'});
-
     const handleSemesterChange = (index: number, field: 'sgpa' | 'credits', value: string) => {
         const newSemesters = [...semesters];
         newSemesters[index][field] = value;
@@ -126,9 +188,6 @@ export function TrackersView() {
     }
     
     // State for Finance Tracker
-    const [transactions, setTransactions] = useState(initialTransactions);
-    const [newTransaction, setNewTransaction] = useState({ description: '', amount: '', type: 'expense' as const });
-
     const addTransaction = () => {
         const amount = parseFloat(newTransaction.amount);
         if(newTransaction.description.trim() && !isNaN(amount)){
@@ -151,9 +210,6 @@ export function TrackersView() {
 
 
     // State for Coding Skills
-    const [skills, setSkills] = useState(initialSkills);
-    const [newSkill, setNewSkill] = useState({name: '', value: 50});
-
     const handleSkillChange = (index: number, value: number[]) => {
         const newSkills = [...skills];
         newSkills[index].value = isNaN(value[0]) ? 0 : Math.min(100, Math.max(0, value[0]));
@@ -183,7 +239,6 @@ export function TrackersView() {
 
 
     // State for Experience Tracker
-    const [experience, setExperience] = useState(initialExperience);
     const addExperience = () => setExperience([...experience, { type: 'Project', title: '', duration: '', status: 'In Progress' }]);
     const deleteExperience = (index: number) => setExperience(experience.filter((_, i) => i !== index));
     const handleExperienceChange = (index: number, field: keyof typeof experience[0], value: string) => {
@@ -194,7 +249,6 @@ export function TrackersView() {
 
 
     // State for Involvement Tracker
-    const [involvement, setInvolvement] = useState(initialInvolvement);
     const addInvolvement = () => setInvolvement([...involvement, { activity: '', contribution: '', date: '' }]);
     const deleteInvolvement = (index: number) => setInvolvement(involvement.filter((_, i) => i !== index));
     const handleInvolvementChange = (index: number, field: keyof typeof involvement[0], value: string) => {
@@ -204,9 +258,6 @@ export function TrackersView() {
     }
 
     // State for Placement Prep
-    const [placementPrep, setPlacementPrep] = useState(initialPlacementPrep);
-    const [newPrepItem, setNewPrepItem] = useState('');
-
     const togglePlacementPrep = (index: number) => {
         const newPlacementPrep = [...placementPrep];
         newPlacementPrep[index].done = !newPlacementPrep[index].done;
@@ -231,9 +282,6 @@ export function TrackersView() {
     }
 
     // State for Goal Tracker
-    const [goals, setGoals] = useState(initialGoals);
-    const [newGoal, setNewGoal] = useState({text: '', category: 'Academic'});
-    
     const toggleGoal = (index: number) => {
         const newGoals = [...goals];
         newGoals[index].done = !newGoals[index].done;
@@ -258,10 +306,6 @@ export function TrackersView() {
     };
 
     // State for Health Tracker
-    const [healthData, setHealthData] = useState(initialHealthData);
-    const [newWorkout, setNewWorkout] = useState({ activity: '', duration: '', date: ''});
-    const [newHygieneItem, setNewHygieneItem] = useState('');
-
     const handleWaterChange = (value: number[]) => setHealthData({...healthData, water: value[0]});
     const handleSleepChange = (value: number[]) => setHealthData({...healthData, sleep: value[0]});
     
@@ -419,33 +463,33 @@ export function TrackersView() {
                             <CardDescription>A healthy mind in a healthy body. Track your wellness metrics.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-6">
-                            <div className="grid md:grid-cols-3 gap-6 text-center">
+                            <div className="grid md:grid-cols-3 gap-6">
                                 <Card>
-                                    <CardHeader className="flex flex-row items-center justify-between pb-2">
+                                    <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
                                         <CardTitle className="text-sm font-medium">Water Intake</CardTitle>
                                         <GlassWater className="h-4 w-4 text-muted-foreground" />
                                     </CardHeader>
-                                    <CardContent>
+                                    <CardContent className="flex flex-col items-center justify-center space-y-2">
                                         <div className="text-2xl font-bold">{healthData.water} glasses</div>
-                                        <Slider value={[healthData.water]} onValueChange={handleWaterChange} max={16} step={1} className="mt-4" />
+                                        <Slider value={[healthData.water]} onValueChange={handleWaterChange} max={16} step={1} className="w-3/4" />
                                     </CardContent>
                                 </Card>
                                 <Card>
-                                    <CardHeader className="flex flex-row items-center justify-between pb-2">
+                                     <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
                                         <CardTitle className="text-sm font-medium">Sleep</CardTitle>
                                         <Bed className="h-4 w-4 text-muted-foreground" />
                                     </CardHeader>
-                                    <CardContent>
+                                    <CardContent className="flex flex-col items-center justify-center space-y-2">
                                         <div className="text-2xl font-bold">{healthData.sleep.toFixed(1)} hours</div>
-                                        <Slider value={[healthData.sleep]} onValueChange={handleSleepChange} max={12} step={0.5} className="mt-4" />
+                                        <Slider value={[healthData.sleep]} onValueChange={handleSleepChange} max={12} step={0.5} className="w-3/4" />
                                     </CardContent>
                                 </Card>
                                  <Card>
-                                    <CardHeader className="flex flex-row items-center justify-between pb-2">
+                                    <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
                                         <CardTitle className="text-sm font-medium">Workouts</CardTitle>
                                         <Dumbbell className="h-4 w-4 text-muted-foreground" />
                                     </CardHeader>
-                                    <CardContent>
+                                    <CardContent className="flex flex-col items-center justify-center space-y-1">
                                         <div className="text-2xl font-bold">{healthData.workouts.length}</div>
                                         <p className="text-xs text-muted-foreground">sessions this week</p>
                                     </CardContent>
@@ -457,7 +501,7 @@ export function TrackersView() {
                                     <Card>
                                         <CardContent className="p-4 space-y-4">
                                             <div className="flex gap-2">
-                                                <Input placeholder="Activity (e.g., Running)" value={newWorkout.activity} onChange={e => setNewWorkout({...newWorkout, activity: e.target.value})} />
+                                                <Input placeholder="Activity" value={newWorkout.activity} onChange={e => setNewWorkout({...newWorkout, activity: e.target.value})} />
                                                 <Input placeholder="Duration" className="w-28" value={newWorkout.duration} onChange={e => setNewWorkout({...newWorkout, duration: e.target.value})} />
                                                 <Input type="date" className="w-40" value={newWorkout.date} onChange={e => setNewWorkout({...newWorkout, date: e.target.value})} />
                                                 <Button onClick={addWorkout} size="icon"><PlusCircle className="h-4 w-4" /></Button>
@@ -480,7 +524,7 @@ export function TrackersView() {
                                      <Card>
                                         <CardContent className="p-4 space-y-4">
                                             <div className="flex gap-2">
-                                                <Input placeholder="New hygiene task..." value={newHygieneItem} onChange={e => setNewHygieneItem(e.target.value)} />
+                                                <Input placeholder="New task..." value={newHygieneItem} onChange={e => setNewHygieneItem(e.target.value)} />
                                                 <Button onClick={addHygieneItem} size="icon"><PlusCircle className="h-4 w-4" /></Button>
                                             </div>
                                             <div className="max-h-40 overflow-y-auto space-y-2 pr-2">
