@@ -90,7 +90,7 @@ export default function NotesPage() {
     setHistoryIndex(-1);
 
     if (drawingData) {
-      const image = new Image();
+      const image = new window.Image();
       image.onload = () => {
         context.drawImage(image, 0, 0);
         saveToHistory(canvas.toDataURL(), true);
@@ -230,7 +230,7 @@ export default function NotesPage() {
      const canvas = canvasRef.current;
       const context = canvas?.getContext('2d');
       if (canvas && context) {
-        const image = new Image();
+        const image = new window.Image();
         image.onload = () => {
             context.clearRect(0, 0, canvas.width, canvas.height);
             context.drawImage(image, 0, 0);
@@ -411,4 +411,3 @@ export default function NotesPage() {
     </div>
   );
 }
-
