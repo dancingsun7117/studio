@@ -445,7 +445,7 @@ export function TrackersView() {
                             <CardContent className="p-4 flex gap-2">
                                 <Input value={newTransaction.description} onChange={e => handleTransactionChange('description', e.target.value)} placeholder="Description" />
                                 <Input type="number" value={newTransaction.amount} onChange={e => handleTransactionChange('amount', e.target.value)} placeholder="Amount" className="w-32" />
-                                 <Select value={newTransaction.type} onValueChange={(value) => handleTransactionChange('type', value)}>
+                                 <Select value={newTransaction.type} onValueChange={(value) => handleTransactionChange('type', value as 'income' | 'expense')}>
                                     <SelectTrigger className="w-32">
                                         <SelectValue placeholder="Type" />
                                     </SelectTrigger>
