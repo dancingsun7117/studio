@@ -230,7 +230,7 @@ export default function IdeasPage() {
             </Card>
 
             <div className="space-y-4 pt-4">
-                <h2 className="font-headline text-2xl font-bold text-primary">Mood Board</h2>
+                <h2 className="font-headline text-2xl font-bold text-primary">Draw Idea</h2>
                 <div className="relative aspect-video w-full rounded-lg border bg-muted/20 overflow-hidden" data-ai-hint="canvas drawing">
                         {isClient && (
                             <canvas
