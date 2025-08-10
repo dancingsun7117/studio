@@ -1,19 +1,35 @@
+
 "use client";
 
 import { useState, useRef, useEffect } from 'react';
 import { Textarea } from '@/components/ui/textarea';
-import { MafiaSealIcon } from '@/components/icons';
 import { Button } from '@/components/ui/button';
-import { Palette, Eraser, Trash2, Undo, Redo } from 'lucide-react';
+import { Palette, Eraser, Trash2, Undo, Redo, PlusCircle, FileText } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Slider } from '@/components/ui/slider';
 import { Input } from '@/components/ui/input';
+import { Card, CardContent } from '@/components/ui/card';
 
-const NOTES_STORAGE_KEY = 'notes_content_v1';
-const MOODBOARD_DRAWING_STORAGE_KEY = 'moodboard_drawing_v1';
+const NOTES_PAGES_STORAGE_KEY = 'notes_pages_v2';
+
+interface NotePageData {
+  id: number;
+  title: string;
+  content: string;
+  drawing: string | null;
+}
+
+const initialPage: NotePageData = {
+    id: 1,
+    title: "My First Note",
+    content: "Start typing your master plan...",
+    drawing: null
+};
 
 export default function NotesPage() {
-  const [notes, setNotes] = useState('');
+  const [pages, setPages] = useState<NotePageData[]>([initialPage]);
+  const [activePageId, setActivePageId] = useState<number | null>(1);
+  
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [color, setColor] = useState('#B8860B');
@@ -22,57 +38,115 @@ export default function NotesPage() {
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [isClient, setIsClient] = useState(false);
 
+  // Load from localStorage on mount
   useEffect(() => {
     setIsClient(true);
     try {
-      const savedNotes = localStorage.getItem(NOTES_STORAGE_KEY);
-      if (savedNotes) {
-        setNotes(savedNotes);
+      const savedPages = localStorage.getItem(NOTES_PAGES_STORAGE_KEY);
+      if (savedPages) {
+        const parsedPages = JSON.parse(savedPages);
+        if (parsedPages.length > 0) {
+            setPages(parsedPages);
+            setActivePageId(parsedPages[0].id);
+        }
       }
     } catch (error) {
       console.error("Failed to parse notes from localStorage", error);
     }
   }, []);
 
+  // Save to localStorage whenever pages change
   useEffect(() => {
     if (isClient) {
       try {
-        localStorage.setItem(NOTES_STORAGE_KEY, notes);
+        localStorage.setItem(NOTES_PAGES_STORAGE_KEY, JSON.stringify(pages));
       } catch (error) {
         console.error("Failed to save notes to localStorage", error);
       }
     }
-  }, [notes, isClient]);
+  }, [pages, isClient]);
+  
+  const activePage = pages.find(p => p.id === activePageId);
 
+  // Load canvas drawing for active page
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (canvas && isClient) {
-      const context = canvas.getContext('2d');
-      if (context) {
-        const savedDrawing = localStorage.getItem(MOODBOARD_DRAWING_STORAGE_KEY);
-        if (savedDrawing) {
-          const image = new Image();
-          image.onload = () => {
-            context.clearRect(0, 0, canvas.width, canvas.height);
-            context.drawImage(image, 0, 0);
-            saveToHistory(canvas.toDataURL());
-          };
-          image.src = savedDrawing;
-        } else {
-            saveToHistory(canvas.toDataURL());
-        }
-      }
+    if (!canvas || !activePage) return;
+    const context = canvas.getContext('2d');
+    if (!context) return;
+
+    // Clear previous drawing
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    
+    const drawingData = activePage.drawing;
+    setHistory([]);
+    setHistoryIndex(-1);
+
+    if (drawingData) {
+      const image = new Image();
+      image.onload = () => {
+        context.drawImage(image, 0, 0);
+        saveToHistory(canvas.toDataURL(), true);
+      };
+      image.src = drawingData;
+    } else {
+       saveToHistory(canvas.toDataURL(), true);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isClient]);
+  }, [activePageId, isClient]);
 
-  const saveToHistory = (dataUrl: string) => {
+  const updatePageData = (pageId: number, updates: Partial<NotePageData>) => {
+    setPages(pages.map(p => p.id === pageId ? { ...p, ...updates } : p));
+  };
+  
+  const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    if (activePageId) {
+        updatePageData(activePageId, { content: e.target.value });
+    }
+  };
+
+  const handleTitleChange = (pageId: number, title: string) => {
+    updatePageData(pageId, { title });
+  };
+  
+  const addNewPage = () => {
+    const newId = Date.now();
+    const newPage: NotePageData = {
+        id: newId,
+        title: `New Note ${pages.length + 1}`,
+        content: '',
+        drawing: null
+    };
+    setPages([...pages, newPage]);
+    setActivePageId(newId);
+  };
+  
+  const deletePage = (pageId: number) => {
+    const newPages = pages.filter(p => p.id !== pageId);
+    setPages(newPages);
+    if (activePageId === pageId) {
+        setActivePageId(newPages.length > 0 ? newPages[0].id : null);
+    }
+  };
+
+  const saveToHistory = (dataUrl: string, initial = false) => {
+    if (initial) {
+      setHistory([dataUrl]);
+      setHistoryIndex(0);
+      return;
+    }
     setHistory(prev => {
         const newHistory = prev.slice(0, historyIndex + 1);
         newHistory.push(dataUrl);
         setHistoryIndex(newHistory.length - 1);
         return newHistory;
     });
+  };
+  
+  const updateDrawingForPage = (dataUrl: string) => {
+      if(activePageId) {
+          updatePageData(activePageId, { drawing: dataUrl });
+      }
   };
 
   const startDrawing = (e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -111,7 +185,7 @@ export default function NotesPage() {
     setIsDrawing(false);
     const dataUrl = canvas.toDataURL();
     saveToHistory(dataUrl);
-    localStorage.setItem(MOODBOARD_DRAWING_STORAGE_KEY, dataUrl);
+    updateDrawingForPage(dataUrl);
   };
   
   const clearCanvas = () => {
@@ -122,25 +196,29 @@ export default function NotesPage() {
       context.clearRect(0, 0, canvas.width, canvas.height);
       const dataUrl = canvas.toDataURL();
       saveToHistory(dataUrl);
-      localStorage.setItem(MOODBOARD_DRAWING_STORAGE_KEY, dataUrl);
+      updateDrawingForPage(dataUrl);
     }
   };
 
-  const undo = () => {
-    if (historyIndex > 0) {
-      const newIndex = historyIndex - 1;
-      setHistoryIndex(newIndex);
-      const canvas = canvasRef.current;
+  const applyHistoryState = (index: number) => {
+     const canvas = canvasRef.current;
       const context = canvas?.getContext('2d');
       if (canvas && context) {
         const image = new Image();
         image.onload = () => {
             context.clearRect(0, 0, canvas.width, canvas.height);
             context.drawImage(image, 0, 0);
-            localStorage.setItem(MOODBOARD_DRAWING_STORAGE_KEY, image.src);
+            updateDrawingForPage(image.src);
         };
-        image.src = history[newIndex];
+        image.src = history[index];
       }
+  }
+
+  const undo = () => {
+    if (historyIndex > 0) {
+      const newIndex = historyIndex - 1;
+      setHistoryIndex(newIndex);
+      applyHistoryState(newIndex);
     }
   };
 
@@ -148,17 +226,7 @@ export default function NotesPage() {
     if (historyIndex < history.length - 1) {
       const newIndex = historyIndex + 1;
       setHistoryIndex(newIndex);
-      const canvas = canvasRef.current;
-      const context = canvas?.getContext('2d');
-      if (canvas && context) {
-        const image = new Image();
-        image.onload = () => {
-            context.clearRect(0, 0, canvas.width, canvas.height);
-            context.drawImage(image, 0, 0);
-            localStorage.setItem(MOODBOARD_DRAWING_STORAGE_KEY, image.src);
-        };
-        image.src = history[newIndex];
-      }
+      applyHistoryState(newIndex);
     }
   };
 
@@ -178,58 +246,98 @@ export default function NotesPage() {
           A secure place for your thoughts, plans, and secret algorithms.
         </p>
       </div>
-      <div className="grid md:grid-cols-2 gap-8 flex-1">
-        <div className="relative flex-1 flex flex-col">
-          <MafiaSealIcon className="absolute bottom-8 right-8 h-32 w-32 text-foreground/5 opacity-50 pointer-events-none" />
-          <Textarea
-            placeholder="Start typing your master plan..."
-            className="h-full min-h-[50vh] w-full resize-none text-lg font-body"
-            style={dotGridStyle}
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-          />
+      <div className="grid md:grid-cols-4 gap-8 flex-1">
+        {/* Pages Sidebar */}
+        <div className="md:col-span-1 space-y-4">
+            <h2 className="font-headline text-2xl font-bold text-primary">Your Notes</h2>
+            <Button onClick={addNewPage} className="w-full">
+                <PlusCircle className="mr-2 h-4 w-4" /> New Page
+            </Button>
+            <div className="space-y-2 h-[60vh] overflow-y-auto pr-2">
+                {pages.map(page => (
+                    <Card key={page.id} className={`group cursor-pointer ${activePageId === page.id ? 'border-primary' : 'border-border'}`} onClick={() => setActivePageId(page.id)}>
+                        <CardContent className="p-2 flex items-center gap-2">
+                            <FileText className="h-5 w-5 text-muted-foreground"/>
+                            <Input 
+                                value={page.title}
+                                onChange={(e) => handleTitleChange(page.id, e.target.value)}
+                                className="flex-1 font-semibold p-0 h-auto border-none bg-transparent focus-visible:ring-0"
+                                onFocus={() => setActivePageId(page.id)}
+                            />
+                            <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100" onClick={(e) => {e.stopPropagation(); deletePage(page.id)}}>
+                                <Trash2 className="h-4 w-4" />
+                            </Button>
+                        </CardContent>
+                    </Card>
+                ))}
+            </div>
         </div>
-        <div className="space-y-4">
-           <h2 className="font-headline text-2xl font-bold text-primary">Mood Board</h2>
-           <div className="relative aspect-video w-full rounded-lg border bg-muted/20 overflow-hidden" data-ai-hint="canvas drawing">
-                {isClient && (
-                    <canvas
-                        ref={canvasRef}
-                        width={800}
-                        height={450}
-                        className="absolute top-0 left-0 h-full w-full"
-                        onMouseDown={startDrawing}
-                        onMouseMove={draw}
-                        onMouseUp={stopDrawing}
-                        onMouseLeave={stopDrawing}
-                    />
-                )}
-                <div className="absolute top-2 right-2 flex gap-1">
-                   <Button variant="outline" size="icon" onClick={undo} disabled={historyIndex <= 0}><Undo className="h-4 w-4"/></Button>
-                    <Button variant="outline" size="icon" onClick={redo} disabled={historyIndex >= history.length - 1}><Redo className="h-4 w-4"/></Button>
-                    <Popover>
-                        <PopoverTrigger asChild>
-                            <Button variant="outline" size="icon"><Palette className="h-4 w-4"/></Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-64">
-                            <div className="space-y-4">
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium">Color</label>
-                                    <Input type="color" value={color} onChange={e => setColor(e.target.value)} className="w-full h-10 p-1" />
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium">Brush Size</label>
-                                    <Slider value={[brushSize]} onValueChange={value => setBrushSize(value[0])} min={1} max={50} step={1} />
-                                </div>
-                            </div>
-                        </PopoverContent>
-                    </Popover>
-                    <Button variant="outline" size="icon" onClick={() => setColor('#FFFFFF')}><Eraser className="h-4 w-4"/></Button>
-                    <Button variant="destructive" size="icon" onClick={clearCanvas}><Trash2 className="h-4 w-4"/></Button>
+
+        {/* Main Content */}
+        <div className="md:col-span-3 grid md:grid-cols-2 gap-8">
+          {activePage ? (
+            <>
+              <div className="relative flex-1 flex flex-col min-h-[50vh]">
+                <Textarea
+                  placeholder="Start typing your master plan..."
+                  className="h-full w-full resize-none text-lg font-body"
+                  style={dotGridStyle}
+                  value={activePage.content}
+                  onChange={handleContentChange}
+                />
+              </div>
+              <div className="space-y-4">
+                <h2 className="font-headline text-2xl font-bold text-primary">Mood Board</h2>
+                <div className="relative aspect-video w-full rounded-lg border bg-muted/20 overflow-hidden" data-ai-hint="canvas drawing">
+                      {isClient && (
+                          <canvas
+                              ref={canvasRef}
+                              width={800}
+                              height={450}
+                              className="absolute top-0 left-0 h-full w-full"
+                              onMouseDown={startDrawing}
+                              onMouseMove={draw}
+                              onMouseUp={stopDrawing}
+                              onMouseLeave={stopDrawing}
+                          />
+                      )}
+                      <div className="absolute top-2 right-2 flex gap-1">
+                        <Button variant="outline" size="icon" onClick={undo} disabled={historyIndex <= 0}><Undo className="h-4 w-4"/></Button>
+                        <Button variant="outline" size="icon" onClick={redo} disabled={historyIndex >= history.length - 1}><Redo className="h-4 w-4"/></Button>
+                          <Popover>
+                              <PopoverTrigger asChild>
+                                  <Button variant="outline" size="icon"><Palette className="h-4 w-4"/></Button>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-64">
+                                  <div className="space-y-4">
+                                      <div className="space-y-2">
+                                          <label className="text-sm font-medium">Color</label>
+                                          <Input type="color" value={color} onChange={e => setColor(e.target.value)} className="w-full h-10 p-1" />
+                                      </div>
+                                      <div className="space-y-2">
+                                          <label className="text-sm font-medium">Brush Size</label>
+                                          <Slider value={[brushSize]} onValueChange={value => setBrushSize(value[0])} min={1} max={50} step={1} />
+                                      </div>
+                                  </div>
+                              </PopoverContent>
+                          </Popover>
+                          <Button variant="outline" size="icon" onClick={() => setColor('#FFFFFF')}><Eraser className="h-4 w-4"/></Button>
+                          <Button variant="destructive" size="icon" onClick={clearCanvas}><Trash2 className="h-4 w-4"/></Button>
+                      </div>
                 </div>
-           </div>
+              </div>
+            </>
+          ) : (
+            <div className="md:col-span-2 flex flex-col items-center justify-center text-center text-muted-foreground h-full">
+                <FileText className="h-16 w-16 mb-4"/>
+                <h2 className="text-xl font-semibold">No note selected</h2>
+                <p>Create a new note or select one from the list to get started.</p>
+            </div>
+          )}
         </div>
       </div>
     </div>
   );
 }
+
+    
