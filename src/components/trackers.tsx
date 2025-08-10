@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { CheckCircle, DollarSign, GitBranch, GraduationCap, Trophy, Users, Briefcase, Target, PlusCircle, Trash2 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Slider } from '@/components/ui/slider';
 
 const trackerSections = [
     { value: 'habits', label: 'Habit Tracker', icon: CheckCircle },
@@ -131,7 +132,7 @@ export function TrackersView() {
         setTransactions(transactions.filter((_, i) => i !== index));
     }
     
-    const handleTransactionChange = (field: keyof typeof newTransaction, value: string) => {
+    const handleTransactionChange = (field: keyof typeof newTransaction, value: string | 'income' | 'expense') => {
         setNewTransaction(prev => ({...prev, [field]: value}));
     }
 
@@ -143,9 +144,9 @@ export function TrackersView() {
     const [skills, setSkills] = useState(initialSkills);
     const [newSkill, setNewSkill] = useState({name: '', value: 50});
 
-    const handleSkillChange = (index: number, value: number) => {
+    const handleSkillChange = (index: number, value: number[]) => {
         const newSkills = [...skills];
-        newSkills[index].value = isNaN(value) ? 0 : Math.min(100, Math.max(0, value));
+        newSkills[index].value = isNaN(value[0]) ? 0 : Math.min(100, Math.max(0, value[0]));
         setSkills(newSkills);
     };
 
@@ -173,11 +174,11 @@ export function TrackersView() {
 
     // State for Experience Tracker
     const [experience, setExperience] = useState(initialExperience);
-    const addExperience = () => setExperience([...experience, { type: '', title: '', duration: '', status: '' }]);
+    const addExperience = () => setExperience([...experience, { type: 'Project', title: '', duration: '', status: 'In Progress' }]);
     const deleteExperience = (index: number) => setExperience(experience.filter((_, i) => i !== index));
     const handleExperienceChange = (index: number, field: keyof typeof experience[0], value: string) => {
         const newExperience = [...experience];
-        newExperience[index][field] = value;
+        newExperience[index][field as keyof typeof experience[0]] = value;
         setExperience(newExperience);
     }
 
@@ -188,7 +189,7 @@ export function TrackersView() {
     const deleteInvolvement = (index: number) => setInvolvement(involvement.filter((_, i) => i !== index));
     const handleInvolvementChange = (index: number, field: keyof typeof involvement[0], value: string) => {
         const newInvolvement = [...involvement];
-        newInvolvement[index][field] = value;
+        newInvolvement[index][field as keyof typeof involvement[0]] = value;
         setInvolvement(newInvolvement);
     }
 
@@ -257,17 +258,19 @@ export function TrackersView() {
                 ))}
             </TabsList>
 
-            <TabsContent value="habits" className="pt-0">
+            <TabsContent value="habits" className="mt-0 pt-0">
                 <Card className="h-full">
                     <CardHeader>
                         <CardTitle className="font-headline text-2xl text-primary">Weekly Habit Tracker</CardTitle>
                         <CardDescription>Consistency is the key to mastery. Check off your habits daily.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                         <div className="flex gap-2">
-                            <Input value={newHabit} onChange={e => setNewHabit(e.target.value)} placeholder="Add a new daily habit..." />
-                            <Button onClick={addHabit}><PlusCircle className="mr-2 h-4 w-4" />Add Habit</Button>
-                        </div>
+                         <Card>
+                            <CardContent className="p-4 flex gap-2">
+                                <Input value={newHabit} onChange={e => setNewHabit(e.target.value)} placeholder="Add a new daily habit..." />
+                                <Button onClick={addHabit}><PlusCircle className="mr-2 h-4 w-4" />Add Habit</Button>
+                            </CardContent>
+                         </Card>
                         <div className="rounded-md border">
                             <Table>
                                 <TableHeader>
@@ -312,7 +315,7 @@ export function TrackersView() {
                 </Card>
             </TabsContent>
             
-             <TabsContent value="goals" className="pt-0">
+             <TabsContent value="goals" className="mt-0 pt-0">
                 <Card className="h-full">
                     <CardHeader>
                         <CardTitle className="font-headline text-2xl text-primary">Goal Tracker</CardTitle>
@@ -360,7 +363,7 @@ export function TrackersView() {
                 </Card>
             </TabsContent>
 
-            <TabsContent value="cgpa" className="pt-0">
+            <TabsContent value="cgpa" className="mt-0 pt-0">
                 <Card className="h-full">
                     <CardHeader>
                         <CardTitle className="font-headline text-2xl text-primary">CGPA Tracker</CardTitle>
@@ -391,14 +394,14 @@ export function TrackersView() {
                 </Card>
             </TabsContent>
 
-            <TabsContent value="coding" className="pt-0">
+            <TabsContent value="coding" className="mt-0 pt-0">
                  <Card className="h-full">
                     <CardHeader>
                         <CardTitle className="font-headline text-2xl text-primary">Coding Skill Tracker</CardTitle>
                         <CardDescription>Track your proficiency. Every line of code builds the empire.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                         <Card className="bg-background/50">
+                         <Card>
                             <CardContent className="p-4 flex gap-2">
                                 <Input value={newSkill.name} onChange={e => handleNewSkillChange('name', e.target.value)} placeholder="Add a new skill to master..." />
                                 <Input type="number" value={newSkill.value} onChange={e => handleNewSkillChange('value', e.target.value)} placeholder="%" className="w-24" />
@@ -408,17 +411,22 @@ export function TrackersView() {
                          <div className="space-y-6 pt-4">
                             {skills.map((skill, index) => (
                                 <div key={index} className="flex items-center gap-4 group">
-                                    <div className="flex-1">
-                                        <div className="flex justify-between mb-1">
-                                            <Input
-                                                value={skill.name}
-                                                onChange={(e) => handleSkillNameChange(index, e.target.value)}
-                                                className="text-base font-semibold text-foreground p-0 h-auto border-none bg-transparent focus-visible:ring-0"
-                                            />
-                                            <span className="text-sm font-medium text-primary">{skill.value}%</span>
-                                        </div>
-                                        <Progress value={skill.value} className="h-2"/>
+                                    <div className="w-40 pr-4">
+                                        <Input
+                                            value={skill.name}
+                                            onChange={(e) => handleSkillNameChange(index, e.target.value)}
+                                            className="text-base font-semibold text-foreground p-0 h-auto border-none bg-transparent focus-visible:ring-0"
+                                        />
                                     </div>
+                                    <div className="flex-1">
+                                         <Slider
+                                            value={[skill.value]}
+                                            onValueChange={(value) => handleSkillChange(index, value)}
+                                            max={100}
+                                            step={1}
+                                        />
+                                    </div>
+                                    <span className="text-sm font-medium text-primary w-12 text-right">{skill.value}%</span>
                                     <Button variant="ghost" size="icon" onClick={() => deleteSkill(index)} className="opacity-0 group-hover:opacity-100">
                                         <Trash2 className="h-4 w-4" />
                                     </Button>
@@ -429,7 +437,7 @@ export function TrackersView() {
                 </Card>
             </TabsContent>
 
-            <TabsContent value="finance" className="pt-0">
+            <TabsContent value="finance" className="mt-0 pt-0">
                 <Card className="h-full">
                     <CardHeader>
                         <CardTitle className="font-headline text-2xl text-primary">Finance Tracker</CardTitle>
@@ -479,7 +487,7 @@ export function TrackersView() {
                 </Card>
             </TabsContent>
 
-            <TabsContent value="experience" className="pt-0">
+            <TabsContent value="experience" className="mt-0 pt-0">
                  <Card className="h-full">
                     <CardHeader>
                         <CardTitle className="font-headline text-2xl text-primary">Experience Tracker</CardTitle>
@@ -492,10 +500,30 @@ export function TrackersView() {
                                  <TableBody>
                                     {experience.map((exp, index) => (
                                         <TableRow key={index}>
-                                            <TableCell><Input value={exp.type} onChange={e => handleExperienceChange(index, 'type', e.target.value)} className="font-semibold" /></TableCell>
+                                            <TableCell>
+                                                <Select value={exp.type} onValueChange={(value) => handleExperienceChange(index, 'type', value)}>
+                                                    <SelectTrigger><SelectValue/></SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value="Internship">Internship</SelectItem>
+                                                        <SelectItem value="Project">Project</SelectItem>
+                                                        <SelectItem value="Research">Research</SelectItem>
+                                                        <SelectItem value="Volunteer">Volunteer</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                            </TableCell>
                                             <TableCell><Input value={exp.title} onChange={e => handleExperienceChange(index, 'title', e.target.value)} /></TableCell>
                                             <TableCell><Input value={exp.duration} onChange={e => handleExperienceChange(index, 'duration', e.target.value)} /></TableCell>
-                                            <TableCell><Input value={exp.status} onChange={e => handleExperienceChange(index, 'status', e.target.value)} /></TableCell>
+                                            <TableCell>
+                                                <Select value={exp.status} onValueChange={(value) => handleExperienceChange(index, 'status', value)}>
+                                                    <SelectTrigger><SelectValue/></SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value="Completed">Completed</SelectItem>
+                                                        <SelectItem value="In Progress">In Progress</SelectItem>
+                                                        <SelectItem value="Ongoing">Ongoing</SelectItem>
+                                                        <SelectItem value="Planned">Planned</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                            </TableCell>
                                             <TableCell className="text-right"><Button variant="ghost" size="icon" onClick={() => deleteExperience(index)}><Trash2 className="h-4 w-4" /></Button></TableCell>
                                         </TableRow>
                                     ))}
@@ -507,7 +535,7 @@ export function TrackersView() {
                 </Card>
             </TabsContent>
 
-            <TabsContent value="events" className="pt-0">
+            <TabsContent value="events" className="mt-0 pt-0">
                  <Card className="h-full">
                     <CardHeader>
                         <CardTitle className="font-headline text-2xl text-primary">Involvement Tracker</CardTitle>
@@ -534,14 +562,14 @@ export function TrackersView() {
                 </Card>
             </TabsContent>
 
-            <TabsContent value="placement" className="pt-0">
+            <TabsContent value="placement" className="mt-0 pt-0">
                  <Card className="h-full">
                     <CardHeader>
                         <CardTitle className="font-headline text-2xl text-primary">Placement Readiness</CardTitle>
                         <CardDescription>Your personalized checklist for total domination.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        <Card className="bg-background/50">
+                        <Card>
                             <CardContent className="p-4 flex gap-2">
                                 <Input value={newPrepItem} onChange={e => setNewPrepItem(e.target.value)} placeholder="Add a new checklist item..." />
                                 <Button onClick={addPlacementPrepItem}><PlusCircle className="mr-2 h-4 w-4" />Add Item</Button>
