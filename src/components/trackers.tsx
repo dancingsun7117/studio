@@ -423,7 +423,7 @@ export function TrackersView() {
                                 {(['Academic', 'Personal', 'Financial'] as const).map(category => (
                                     <Card key={category} className="bg-background/50">
                                         <CardHeader>
-                                        <CardTitle className="font-headline text-accent">{category} Goals</CardTitle>
+                                        <CardTitle className="font-headline text-accent text-lg">{category} Goals</CardTitle>
                                         </CardHeader>
                                         <CardContent className="space-y-4">
                                             <div className="flex gap-2">
@@ -598,13 +598,13 @@ export function TrackersView() {
                             </Card>
                             <div className="space-y-6 pt-4">
                                 {skills.map((skill, index) => (
-                                    <div key={index} className="grid grid-cols-1 md:grid-cols-[200px_1fr_auto] items-center gap-4 group">
+                                    <div key={index} className="grid grid-cols-[200px_1fr_auto] items-center gap-4 group">
                                         <Input
                                             value={skill.name}
                                             onChange={(e) => handleSkillNameChange(index, e.target.value)}
                                             className="text-base font-semibold text-foreground p-0 h-auto border-none bg-transparent focus-visible:ring-0"
                                         />
-                                        <div className="flex items-center gap-4">
+                                        <div className="flex-1 flex items-center gap-4">
                                             <input
                                                 type="range"
                                                 min="0"
@@ -612,7 +612,7 @@ export function TrackersView() {
                                                 step="1"
                                                 value={skill.value}
                                                 onChange={(e) => handleSkillChange(index, parseInt(e.target.value))}
-                                                className="custom-range"
+                                                className="custom-range flex-1"
                                                 style={{'--value': `${skill.value}%`} as React.CSSProperties}
                                             />
                                             <span className="text-sm font-medium text-primary w-12 text-right">{skill.value}%</span>
