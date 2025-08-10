@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -7,13 +8,14 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, DollarSign, GitBranch, GraduationCap, Trophy, Users, Briefcase, Target, PlusCircle, Trash2 } from 'lucide-react';
+import { CheckCircle, DollarSign, GitBranch, GraduationCap, Trophy, Users, Briefcase, Target, PlusCircle, Trash2, HeartPulse, GlassWater, Dumbbell, Bed } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
 
 const trackerSections = [
     { value: 'habits', label: 'Habit Tracker', icon: CheckCircle },
     { value: 'goals', label: 'Goal Tracker', icon: Target },
+    { value: 'health', label: 'Health & Fitness', icon: HeartPulse },
     { value: 'cgpa', label: 'CGPA Tracker', icon: GraduationCap },
     { value: 'coding', label: 'Coding Skills', icon: GitBranch },
     { value: 'finance', label: 'Finance Tracker', icon: DollarSign },
@@ -72,6 +74,18 @@ const initialPlacementPrep = [
     { text: 'HR Mock Interviews (1/2)', done: false },
 ];
 
+const initialHealthData = {
+    water: 4, // in glasses
+    workouts: [
+        { activity: 'HIIT', duration: '30 min', date: '2025-07-21' }
+    ],
+    sleep: 7.5, // in hours
+    hygiene: [
+        { text: 'Skincare Routine', done: true },
+        { text: 'Floss', done: true },
+        { text: 'Tidy up room', done: false }
+    ]
+};
 
 export function TrackersView() {
     // State for Habit Tracker
@@ -243,6 +257,45 @@ export function TrackersView() {
         setGoals(newGoals);
     };
 
+    // State for Health Tracker
+    const [healthData, setHealthData] = useState(initialHealthData);
+    const [newWorkout, setNewWorkout] = useState({ activity: '', duration: '', date: ''});
+    const [newHygieneItem, setNewHygieneItem] = useState('');
+
+    const handleWaterChange = (value: number[]) => setHealthData({...healthData, water: value[0]});
+    const handleSleepChange = (value: number[]) => setHealthData({...healthData, sleep: value[0]});
+    
+    const addWorkout = () => {
+        if (newWorkout.activity.trim() && newWorkout.duration.trim() && newWorkout.date.trim()) {
+            setHealthData({...healthData, workouts: [newWorkout, ...healthData.workouts]});
+            setNewWorkout({ activity: '', duration: '', date: ''});
+        }
+    };
+    const deleteWorkout = (index: number) => {
+        const newWorkouts = healthData.workouts.filter((_, i) => i !== index);
+        setHealthData({...healthData, workouts: newWorkouts});
+    };
+
+    const addHygieneItem = () => {
+        if (newHygieneItem.trim()) {
+            setHealthData({...healthData, hygiene: [...healthData.hygiene, {text: newHygieneItem, done: false}]});
+            setNewHygieneItem('');
+        }
+    };
+    const toggleHygiene = (index: number) => {
+        const newHygiene = [...healthData.hygiene];
+        newHygiene[index].done = !newHygiene[index].done;
+        setHealthData({...healthData, hygiene: newHygiene});
+    };
+    const deleteHygiene = (index: number) => {
+        const newHygiene = healthData.hygiene.filter((_, i) => i !== index);
+        setHealthData({...healthData, hygiene: newHygiene});
+    };
+    const handleHygieneTextChange = (index: number, text: string) => {
+        const newHygiene = [...healthData.hygiene];
+        newHygiene[index].text = text;
+        setHealthData({ ...healthData, hygiene: newHygiene });
+    };
 
     return (
         <Tabs defaultValue="habits" className="w-full flex flex-col md:flex-row gap-6">
@@ -358,6 +411,99 @@ export function TrackersView() {
                         </CardContent>
                     </Card>
                 </TabsContent>
+                
+                 <TabsContent value="health" className="mt-0">
+                    <Card className="h-full">
+                        <CardHeader>
+                            <CardTitle className="font-headline text-2xl text-primary">Health, Fitness & Hygiene</CardTitle>
+                            <CardDescription>A healthy mind in a healthy body. Track your wellness metrics.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            <div className="grid md:grid-cols-3 gap-6">
+                                <Card>
+                                    <CardHeader className="flex flex-row items-center justify-between pb-2">
+                                        <CardTitle className="text-sm font-medium">Water Intake</CardTitle>
+                                        <GlassWater className="h-4 w-4 text-muted-foreground" />
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="text-2xl font-bold">{healthData.water} glasses</div>
+                                        <Slider value={[healthData.water]} onValueChange={handleWaterChange} max={16} step={1} className="mt-4" />
+                                    </CardContent>
+                                </Card>
+                                <Card>
+                                    <CardHeader className="flex flex-row items-center justify-between pb-2">
+                                        <CardTitle className="text-sm font-medium">Sleep</CardTitle>
+                                        <Bed className="h-4 w-4 text-muted-foreground" />
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="text-2xl font-bold">{healthData.sleep.toFixed(1)} hours</div>
+                                        <Slider value={[healthData.sleep]} onValueChange={handleSleepChange} max={12} step={0.5} className="mt-4" />
+                                    </CardContent>
+                                </Card>
+                                 <Card>
+                                    <CardHeader className="flex flex-row items-center justify-between pb-2">
+                                        <CardTitle className="text-sm font-medium">Workouts</CardTitle>
+                                        <Dumbbell className="h-4 w-4 text-muted-foreground" />
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="text-2xl font-bold">{healthData.workouts.length}</div>
+                                        <p className="text-xs text-muted-foreground">sessions this week</p>
+                                    </CardContent>
+                                </Card>
+                            </div>
+                            <div className="grid md:grid-cols-2 gap-6">
+                                <div>
+                                    <h3 className="font-headline text-lg text-accent mb-2">Workout Log</h3>
+                                    <Card>
+                                        <CardContent className="p-4">
+                                            <div className="flex gap-2 mb-4">
+                                                <Input placeholder="Activity (e.g., Running)" value={newWorkout.activity} onChange={e => setNewWorkout({...newWorkout, activity: e.target.value})} />
+                                                <Input placeholder="Duration" className="w-28" value={newWorkout.duration} onChange={e => setNewWorkout({...newWorkout, duration: e.target.value})} />
+                                                <Input type="date" className="w-40" value={newWorkout.date} onChange={e => setNewWorkout({...newWorkout, date: e.target.value})} />
+                                                <Button onClick={addWorkout} size="icon"><PlusCircle className="h-4 w-4" /></Button>
+                                            </div>
+                                            <div className="max-h-40 overflow-y-auto space-y-2">
+                                                {healthData.workouts.map((w, i) => (
+                                                    <div key={i} className="flex items-center gap-2 p-2 rounded-md bg-secondary/10 text-sm">
+                                                        <span className="font-semibold flex-1">{w.activity}</span>
+                                                        <span>{w.duration}</span>
+                                                        <span className="text-muted-foreground">{w.date}</span>
+                                                        <Button variant="ghost" size="icon" onClick={() => deleteWorkout(i)} className="h-6 w-6"><Trash2 className="h-4 w-4" /></Button>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                </div>
+                                <div>
+                                    <h3 className="font-headline text-lg text-accent mb-2">Hygiene & Self-Care</h3>
+                                     <Card>
+                                        <CardContent className="p-4">
+                                            <div className="flex gap-2 mb-4">
+                                                <Input placeholder="New hygiene task..." value={newHygieneItem} onChange={e => setNewHygieneItem(e.target.value)} />
+                                                <Button onClick={addHygieneItem} size="icon"><PlusCircle className="h-4 w-4" /></Button>
+                                            </div>
+                                            <div className="max-h-40 overflow-y-auto space-y-2">
+                                                {healthData.hygiene.map((h, i) => (
+                                                    <div key={i} className="flex items-center gap-3 group">
+                                                         <Checkbox id={`hygiene-${i}`} checked={h.done} onCheckedChange={() => toggleHygiene(i)}/>
+                                                         <Input
+                                                            value={h.text}
+                                                            onChange={(e) => handleHygieneTextChange(i, e.target.value)}
+                                                            className={`p-0 h-auto border-none bg-transparent focus-visible:ring-0 ${h.done ? 'line-through text-muted-foreground' : ''}`}
+                                                        />
+                                                         <Button variant="ghost" size="icon" onClick={() => deleteHygiene(i)} className="h-6 w-6 opacity-0 group-hover:opacity-100"><Trash2 className="h-4 w-4" /></Button>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+
 
                 <TabsContent value="cgpa" className="mt-0">
                     <Card className="h-full">
@@ -593,3 +739,5 @@ export function TrackersView() {
         </Tabs>
     );
 }
+
+    
