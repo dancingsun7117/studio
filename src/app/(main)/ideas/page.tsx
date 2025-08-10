@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useRef } from 'react';
@@ -90,6 +91,18 @@ export default function IdeasPage() {
         return newHistory;
     });
   };
+  
+  const getScaledCoords = (e: React.MouseEvent<HTMLCanvasElement>): [number, number] => {
+    const canvas = canvasRef.current;
+    if (!canvas) return [0, 0];
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    return [
+      (e.clientX - rect.left) * scaleX,
+      (e.clientY - rect.top) * scaleY
+    ];
+  };
 
   const startDrawing = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
@@ -98,8 +111,9 @@ export default function IdeasPage() {
     if (!context) return;
     
     setIsDrawing(true);
+    const [x, y] = getScaledCoords(e);
     context.beginPath();
-    context.moveTo(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
+    context.moveTo(x, y);
     context.lineWidth = brushSize;
     context.strokeStyle = color;
     context.lineCap = 'round';
@@ -113,7 +127,8 @@ export default function IdeasPage() {
     const context = canvas.getContext('2d');
     if (!context) return;
 
-    context.lineTo(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
+    const [x, y] = getScaledCoords(e);
+    context.lineTo(x, y);
     context.stroke();
   };
 
