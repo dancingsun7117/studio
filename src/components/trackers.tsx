@@ -67,12 +67,23 @@ export function TrackersView() {
         newHabits[habitIndex].days[dayIndex] = !newHabits[habitIndex].days[dayIndex];
         setHabits(newHabits);
     };
-    
+
+    const handleHabitNameChange = (habitIndex: number, newName: string) => {
+        const newHabits = [...habits];
+        newHabits[habitIndex].name = newName;
+        setHabits(newHabits);
+    }
+
     const addHabit = () => {
         if(newHabit.trim()){
             setHabits([...habits, { name: newHabit, days: Array(7).fill(false) }]);
             setNewHabit('');
         }
+    }
+
+    const deleteHabit = (habitIndex: number) => {
+        const newHabits = habits.filter((_, index) => index !== habitIndex);
+        setHabits(newHabits);
     }
 
     // State for CGPA Tracker
@@ -157,7 +168,7 @@ export function TrackersView() {
                         <Table>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead>Habit</TableHead>
+                                    <TableHead className="w-[40%]">Habit</TableHead>
                                     <TableHead>M</TableHead>
                                     <TableHead>T</TableHead>
                                     <TableHead>W</TableHead>
@@ -165,24 +176,36 @@ export function TrackersView() {
                                     <TableHead>F</TableHead>
                                     <TableHead>S</TableHead>
                                     <TableHead>S</TableHead>
+                                    <TableHead>Actions</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
                                 {habits.map((habit, habitIndex) => (
                                     <TableRow key={habitIndex}>
-                                        <TableCell>{habit.name}</TableCell>
+                                        <TableCell>
+                                            <Input 
+                                                value={habit.name} 
+                                                onChange={(e) => handleHabitNameChange(habitIndex, e.target.value)}
+                                                className="border-none bg-transparent p-0 focus-visible:ring-0"
+                                            />
+                                        </TableCell>
                                         {habit.days.map((day, dayIndex) => (
                                             <TableCell key={dayIndex}>
                                                 <Checkbox checked={day} onCheckedChange={() => toggleHabit(habitIndex, dayIndex)} />
                                             </TableCell>
                                         ))}
+                                        <TableCell>
+                                            <Button variant="ghost" size="icon" onClick={() => deleteHabit(habitIndex)}>
+                                                <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                        </TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
                         </Table>
                          <div className="mt-4 flex gap-2">
                             <Input value={newHabit} onChange={e => setNewHabit(e.target.value)} placeholder="Add a new habit..." />
-                            <Button onClick={addHabit}>Add Habit</Button>
+                            <Button onClick={addHabit}><PlusCircle className="mr-2" />Add Habit</Button>
                         </div>
                     </CardContent>
                 </Card>
