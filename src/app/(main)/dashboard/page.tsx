@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useRef, useEffect } from 'react';
@@ -24,6 +25,7 @@ const colorClasses = ["text-blue-400", "text-green-400", "text-red-400", "text-y
 
 const VISION_BOARD_STORAGE_KEY = 'vision_board_image_v1';
 const GRATITUDE_STORAGE_KEY = 'gratitude_text_v1';
+const MISSION_STATEMENT_STORAGE_KEY = 'mission_statement_v1';
 
 export default function DashboardPage() {
   const { selectedQuote } = useQuote();
@@ -31,6 +33,7 @@ export default function DashboardPage() {
   const [newReminder, setNewReminder] = useState('');
   const [visionBoardImage, setVisionBoardImage] = useState<string | null>(null);
   const [gratitudeText, setGratitudeText] = useState('');
+  const [missionStatement, setMissionStatement] = useState('“In a world full of noise, she codes in silence and conquers in power.”');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -42,6 +45,10 @@ export default function DashboardPage() {
       const savedGratitude = localStorage.getItem(GRATITUDE_STORAGE_KEY);
       if (savedGratitude) {
         setGratitudeText(savedGratitude);
+      }
+      const savedMission = localStorage.getItem(MISSION_STATEMENT_STORAGE_KEY);
+      if (savedMission) {
+        setMissionStatement(savedMission);
       }
     } catch (error) {
       console.error("Failed to load data from localStorage", error);
@@ -55,6 +62,14 @@ export default function DashboardPage() {
       console.error("Failed to save gratitude text to localStorage", error);
     }
   }, [gratitudeText]);
+  
+  useEffect(() => {
+    try {
+      localStorage.setItem(MISSION_STATEMENT_STORAGE_KEY, missionStatement);
+    } catch (error) {
+      console.error("Failed to save mission statement to localStorage", error);
+    }
+  }, [missionStatement]);
 
   const addReminder = () => {
     if (newReminder.trim()) {
@@ -192,9 +207,13 @@ export default function DashboardPage() {
               <CardTitle className="font-headline text-lg text-primary">Personal Mission</CardTitle>
             </CardHeader>
             <CardContent>
-              <blockquote className="border-l-4 border-primary pl-4 italic text-foreground/80">
-                “In a world full of noise, she codes in silence and conquers in power.”
-              </blockquote>
+              <Textarea
+                  placeholder="Your mission statement..."
+                  value={missionStatement}
+                  onChange={(e) => setMissionStatement(e.target.value)}
+                  className="bg-transparent border-l-4 border-primary pl-4 italic text-foreground/80 focus-visible:ring-0 resize-none text-base"
+                  rows={3}
+                />
             </CardContent>
           </Card>
       </div>
