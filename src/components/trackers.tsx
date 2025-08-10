@@ -9,6 +9,7 @@ import { Progress } from '@/components/ui/progress';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { CheckCircle, DollarSign, GitBranch, GraduationCap, Trophy, Users, Briefcase, Target, PlusCircle, Trash2 } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const trackerSections = [
     { value: 'habits', label: 'Habit Tracker', icon: CheckCircle },
@@ -30,6 +31,15 @@ const initialHabits = [
 ];
 
 const initialSemesters = [...Array(8)].map(() => ({ sgpa: '', credits: '' }));
+
+const initialTransactions = [
+    { description: 'Scholarship', amount: 1000, type: 'income' },
+    { description: 'Freelance Project', amount: 200, type: 'income' },
+    { description: 'Textbooks', amount: -150, type: 'expense' },
+    { description: 'Coffee', amount: -50, type: 'expense' },
+    { description: 'Pizza Night', amount: -100, type: 'expense' },
+    { description: 'Team Dinner', amount: -500, type: 'expense' },
+]
 
 const initialSkills = [
     { name: 'Data Structures', value: 75 },
@@ -56,6 +66,14 @@ const initialGoals = [
     { category: 'Personal', text: 'Read 12 books this year', done: false },
     { category: 'Financial', text: 'Save $5000 for post-grad trip', done: false }
 ]
+
+const initialPlacementPrep = [
+    { text: 'Resume Updated & Tailored', done: true },
+    { text: 'Aptitude Practice (5/10 tests)', done: false },
+    { text: 'Technical Mock Interviews (2/5)', done: false },
+    { text: 'HR Mock Interviews (1/2)', done: false },
+];
+
 
 export function TrackersView() {
     // State for Habit Tracker
@@ -97,35 +115,55 @@ export function TrackersView() {
     }
     
     // State for Finance Tracker
-    const [transactions, setTransactions] = useState<{description: string; amount: number}[]>([]);
-    const [newTransaction, setNewTransaction] = useState('');
-    const [transactionAmount, setTransactionAmount] = useState('');
+    const [transactions, setTransactions] = useState(initialTransactions);
+    const [newTransaction, setNewTransaction] = useState({ description: '', amount: '', type: 'expense' });
 
     const addTransaction = () => {
-        const amount = parseFloat(transactionAmount);
-        if(newTransaction.trim() && !isNaN(amount)){
-            setTransactions([...transactions, {description: newTransaction, amount}]);
-            setNewTransaction('');
-            setTransactionAmount('');
+        const amount = parseFloat(newTransaction.amount);
+        if(newTransaction.description.trim() && !isNaN(amount)){
+            const finalAmount = newTransaction.type === 'expense' ? -Math.abs(amount) : Math.abs(amount);
+            setTransactions([...transactions, {description: newTransaction.description, amount: finalAmount, type: newTransaction.type}]);
+            setNewTransaction({ description: '', amount: '', type: 'expense' });
         }
     }
 
     const deleteTransaction = (index: number) => {
         setTransactions(transactions.filter((_, i) => i !== index));
     }
+    
+    const handleTransactionChange = (field: keyof typeof newTransaction, value: string) => {
+        setNewTransaction(prev => ({...prev, [field]: value}));
+    }
 
-    const totalIncome = transactions.filter(t => t.amount > 0).reduce((sum, t) => sum + t.amount, 1200);
-    const totalExpenses = transactions.filter(t => t.amount < 0).reduce((sum, t) => sum + t.amount, -800);
+    const totalIncome = transactions.filter(t => t.amount > 0).reduce((sum, t) => sum + t.amount, 0);
+    const totalExpenses = transactions.filter(t => t.amount < 0).reduce((sum, t) => sum + t.amount, 0);
 
 
     // State for Coding Skills
     const [skills, setSkills] = useState(initialSkills);
+    const [newSkill, setNewSkill] = useState({name: '', value: 50});
 
     const handleSkillChange = (index: number, value: number) => {
         const newSkills = [...skills];
-        newSkills[index].value = value;
+        newSkills[index].value = isNaN(value) ? 0 : Math.min(100, Math.max(0, value));
         setSkills(newSkills);
     };
+
+    const handleNewSkillChange = (field: keyof typeof newSkill, value: string | number) => {
+        setNewSkill(prev => ({...prev, [field]: value}));
+    }
+
+    const addSkill = () => {
+        if(newSkill.name.trim()){
+            setSkills([...skills, { name: newSkill.name, value: Number(newSkill.value) }]);
+            setNewSkill({name: '', value: 50});
+        }
+    }
+
+    const deleteSkill = (index: number) => {
+        setSkills(skills.filter((_, i) => i !== index));
+    }
+
 
     // State for Experience Tracker
     const [experience, setExperience] = useState(initialExperience);
@@ -149,12 +187,25 @@ export function TrackersView() {
     }
 
     // State for Placement Prep
-    const [placementPrep, setPlacementPrep] = useState([true, false, false, false]);
+    const [placementPrep, setPlacementPrep] = useState(initialPlacementPrep);
+    const [newPrepItem, setNewPrepItem] = useState('');
+
     const togglePlacementPrep = (index: number) => {
         const newPlacementPrep = [...placementPrep];
-        newPlacementPrep[index] = !newPlacementPrep[index];
+        newPlacementPrep[index].done = !newPlacementPrep[index].done;
         setPlacementPrep(newPlacementPrep);
     }
+
+    const addPlacementPrepItem = () => {
+        if (newPrepItem.trim()) {
+            setPlacementPrep([...placementPrep, { text: newPrepItem, done: false }]);
+            setNewPrepItem('');
+        }
+    };
+    
+    const deletePlacementPrepItem = (index: number) => {
+        setPlacementPrep(placementPrep.filter((_, i) => i !== index));
+    };
 
     // State for Goal Tracker
     const [goals, setGoals] = useState(initialGoals);
@@ -274,14 +325,24 @@ export function TrackersView() {
                         <CardDescription>Manage your college and personal finances.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        <div className="grid grid-cols-2 gap-4">
-                           <Card><CardHeader><CardTitle>${totalIncome.toFixed(2)}</CardTitle><CardDescription>Total Income</CardDescription></CardHeader></Card>
-                           <Card><CardHeader><CardTitle>${Math.abs(totalExpenses).toFixed(2)}</CardTitle><CardDescription>Total Expenses</CardDescription></CardHeader></Card>
+                        <div className="grid grid-cols-3 gap-4">
+                           <Card><CardHeader><CardTitle className="text-green-500">${totalIncome.toFixed(2)}</CardTitle><CardDescription>Total Income</CardDescription></CardHeader></Card>
+                           <Card><CardHeader><CardTitle className="text-red-500">${Math.abs(totalExpenses).toFixed(2)}</CardTitle><CardDescription>Total Expenses</CardDescription></CardHeader></Card>
+                           <Card><CardHeader><CardTitle>${(totalIncome + totalExpenses).toFixed(2)}</CardTitle><CardDescription>Balance</CardDescription></CardHeader></Card>
                         </div>
-                        <div className="flex gap-2">
-                            <Input value={newTransaction} onChange={e => setNewTransaction(e.target.value)} placeholder="Description (e.g., Coffee)" />
-                            <Input type="number" value={transactionAmount} onChange={e => setTransactionAmount(e.target.value)} placeholder="Amount (e.g., -5 or 50)" />
-                            <Button onClick={addTransaction}>Add Transaction</Button>
+                         <div className="flex gap-2">
+                            <Input value={newTransaction.description} onChange={e => handleTransactionChange('description', e.target.value)} placeholder="Description" />
+                            <Input type="number" value={newTransaction.amount} onChange={e => handleTransactionChange('amount', e.target.value)} placeholder="Amount" />
+                             <Select value={newTransaction.type} onValueChange={(value) => handleTransactionChange('type', value)}>
+                                <SelectTrigger className="w-[180px]">
+                                    <SelectValue placeholder="Type" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="income">Income</SelectItem>
+                                    <SelectItem value="expense">Expense</SelectItem>
+                                </SelectContent>
+                            </Select>
+                            <Button onClick={addTransaction}><PlusCircle className="mr-2 h-4 w-4"/>Add</Button>
                         </div>
                         <Table>
                             <TableHeader><TableRow><TableHead>Description</TableHead><TableHead>Amount</TableHead><TableHead className="text-right">Actions</TableHead></TableRow></TableHeader>
@@ -311,21 +372,31 @@ export function TrackersView() {
                     </CardHeader>
                     <CardContent className="space-y-4">
                         {skills.map((skill, index) => (
-                            <div key={skill.name}>
-                                <div className="flex justify-between mb-1">
-                                    <span className="text-base font-medium text-primary">{skill.name}</span>
-                                    <Input 
-                                        type="number" 
-                                        className="w-20 h-7 text-sm" 
-                                        value={skill.value} 
-                                        onChange={e => handleSkillChange(index, parseInt(e.target.value, 10))}
-                                        max={100}
-                                        min={0}
-                                     />
+                            <div key={index} className="flex items-center gap-2">
+                                <div className="flex-1">
+                                    <div className="flex justify-between mb-1">
+                                        <span className="text-base font-medium text-primary">{skill.name}</span>
+                                        <Input 
+                                            type="number" 
+                                            className="w-20 h-7 text-sm" 
+                                            value={skill.value} 
+                                            onChange={e => handleSkillChange(index, parseInt(e.target.value, 10))}
+                                            max={100}
+                                            min={0}
+                                         />
+                                    </div>
+                                    <Progress value={skill.value} />
                                 </div>
-                                <Progress value={skill.value} />
+                                <Button variant="ghost" size="icon" onClick={() => deleteSkill(index)}>
+                                    <Trash2 className="h-4 w-4" />
+                                </Button>
                             </div>
                         ))}
+                         <div className="mt-4 flex gap-2">
+                            <Input value={newSkill.name} onChange={e => handleNewSkillChange('name', e.target.value)} placeholder="Add a new skill..." />
+                            <Input type="number" value={newSkill.value} onChange={e => handleNewSkillChange('value', e.target.value)} placeholder="Initial %" className="w-24" />
+                            <Button onClick={addSkill}><PlusCircle className="mr-2 h-4 w-4" />Add Skill</Button>
+                        </div>
                     </CardContent>
                 </Card>
             </TabsContent>
@@ -385,12 +456,22 @@ export function TrackersView() {
                  <Card>
                     <CardHeader>
                         <CardTitle className="font-headline">Placement Readiness Tracker</CardTitle>
+                        <CardDescription>Create your personalized checklist for placement preparation.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        <div className="flex items-center space-x-2"><Checkbox id="resume" checked={placementPrep[0]} onCheckedChange={() => togglePlacementPrep(0)} /><label htmlFor="resume">Resume Updated & Tailored</label></div>
-                        <div className="flex items-center space-x-2"><Checkbox id="apti" checked={placementPrep[1]} onCheckedChange={() => togglePlacementPrep(1)} /><label htmlFor="apti">Aptitude Practice (5/10 tests)</label></div>
-                        <div className="flex items-center space-x-2"><Checkbox id="tech" checked={placementPrep[2]} onCheckedChange={() => togglePlacementPrep(2)} /><label htmlFor="tech">Technical Mock Interviews (2/5)</label></div>
-                        <div className="flex items-center space-x-2"><Checkbox id="hr" checked={placementPrep[3]} onCheckedChange={() => togglePlacementPrep(3)} /><label htmlFor="hr">HR Mock Interviews (1/2)</label></div>
+                        {placementPrep.map((item, index) => (
+                            <div key={index} className="flex items-center space-x-2">
+                                <Checkbox id={`prep-${index}`} checked={item.done} onCheckedChange={() => togglePlacementPrep(index)} />
+                                <label htmlFor={`prep-${index}`} className="flex-1">{item.text}</label>
+                                 <Button variant="ghost" size="icon" onClick={() => deletePlacementPrepItem(index)}>
+                                    <Trash2 className="h-4 w-4" />
+                                </Button>
+                            </div>
+                        ))}
+                         <div className="mt-4 flex gap-2">
+                            <Input value={newPrepItem} onChange={e => setNewPrepItem(e.target.value)} placeholder="Add new prep item..." />
+                            <Button onClick={addPlacementPrepItem}><PlusCircle className="mr-2 h-4 w-4" />Add Item</Button>
+                        </div>
                     </CardContent>
                 </Card>
             </TabsContent>
