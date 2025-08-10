@@ -99,18 +99,21 @@ export function TrackersView() {
     // State for Finance Tracker
     const [transactions, setTransactions] = useState<{description: string; amount: number}[]>([]);
     const [newTransaction, setNewTransaction] = useState('');
+    const [transactionAmount, setTransactionAmount] = useState('');
 
     const addTransaction = () => {
-        if(newTransaction.trim()){
-            const parts = newTransaction.split(' ');
-            const amount = parseFloat(parts[0]);
-            const description = parts.slice(1).join(' ');
-            if(!isNaN(amount)) {
-                setTransactions([...transactions, {description, amount}]);
-                setNewTransaction('');
-            }
+        const amount = parseFloat(transactionAmount);
+        if(newTransaction.trim() && !isNaN(amount)){
+            setTransactions([...transactions, {description: newTransaction, amount}]);
+            setNewTransaction('');
+            setTransactionAmount('');
         }
     }
+
+    const deleteTransaction = (index: number) => {
+        setTransactions(transactions.filter((_, i) => i !== index));
+    }
+
     const totalIncome = transactions.filter(t => t.amount > 0).reduce((sum, t) => sum + t.amount, 1200);
     const totalExpenses = transactions.filter(t => t.amount < 0).reduce((sum, t) => sum + t.amount, -800);
 
@@ -127,10 +130,23 @@ export function TrackersView() {
     // State for Experience Tracker
     const [experience, setExperience] = useState(initialExperience);
     const addExperience = () => setExperience([...experience, { type: '', title: '', duration: '', status: '' }]);
+    const deleteExperience = (index: number) => setExperience(experience.filter((_, i) => i !== index));
+    const handleExperienceChange = (index: number, field: keyof typeof experience[0], value: string) => {
+        const newExperience = [...experience];
+        newExperience[index][field] = value;
+        setExperience(newExperience);
+    }
+
 
     // State for Involvement Tracker
     const [involvement, setInvolvement] = useState(initialInvolvement);
     const addInvolvement = () => setInvolvement([...involvement, { activity: '', contribution: '', date: '' }]);
+    const deleteInvolvement = (index: number) => setInvolvement(involvement.filter((_, i) => i !== index));
+    const handleInvolvementChange = (index: number, field: keyof typeof involvement[0], value: string) => {
+        const newInvolvement = [...involvement];
+        newInvolvement[index][field] = value;
+        setInvolvement(newInvolvement);
+    }
 
     // State for Placement Prep
     const [placementPrep, setPlacementPrep] = useState([true, false, false, false]);
@@ -142,10 +158,23 @@ export function TrackersView() {
 
     // State for Goal Tracker
     const [goals, setGoals] = useState(initialGoals);
+    const [newGoal, setNewGoal] = useState({text: '', category: 'Academic'});
+    
     const toggleGoal = (index: number) => {
         const newGoals = [...goals];
         newGoals[index].done = !newGoals[index].done;
         setGoals(newGoals);
+    };
+
+    const addGoal = (category: string) => {
+        if(newGoal.text.trim() && newGoal.category === category) {
+            setGoals([...goals, { text: newGoal.text, category: newGoal.category, done: false}]);
+            setNewGoal({text: '', category: 'Academic'});
+        }
+    };
+
+    const deleteGoal = (index: number) => {
+        setGoals(goals.filter((_, i) => i !== index));
     };
 
     return (
@@ -176,7 +205,7 @@ export function TrackersView() {
                                     <TableHead>F</TableHead>
                                     <TableHead>S</TableHead>
                                     <TableHead>S</TableHead>
-                                    <TableHead>Actions</TableHead>
+                                    <TableHead className="text-right">Actions</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -194,7 +223,7 @@ export function TrackersView() {
                                                 <Checkbox checked={day} onCheckedChange={() => toggleHabit(habitIndex, dayIndex)} />
                                             </TableCell>
                                         ))}
-                                        <TableCell>
+                                        <TableCell className="text-right">
                                             <Button variant="ghost" size="icon" onClick={() => deleteHabit(habitIndex)}>
                                                 <Trash2 className="h-4 w-4" />
                                             </Button>
@@ -205,7 +234,7 @@ export function TrackersView() {
                         </Table>
                          <div className="mt-4 flex gap-2">
                             <Input value={newHabit} onChange={e => setNewHabit(e.target.value)} placeholder="Add a new habit..." />
-                            <Button onClick={addHabit}><PlusCircle className="mr-2" />Add Habit</Button>
+                            <Button onClick={addHabit}><PlusCircle className="mr-2 h-4 w-4" />Add Habit</Button>
                         </div>
                     </CardContent>
                 </Card>
@@ -250,16 +279,22 @@ export function TrackersView() {
                            <Card><CardHeader><CardTitle>${Math.abs(totalExpenses).toFixed(2)}</CardTitle><CardDescription>Total Expenses</CardDescription></CardHeader></Card>
                         </div>
                         <div className="flex gap-2">
-                            <Input value={newTransaction} onChange={e => setNewTransaction(e.target.value)} placeholder="Add new transaction (e.g., -50 for coffee book)" />
+                            <Input value={newTransaction} onChange={e => setNewTransaction(e.target.value)} placeholder="Description (e.g., Coffee)" />
+                            <Input type="number" value={transactionAmount} onChange={e => setTransactionAmount(e.target.value)} placeholder="Amount (e.g., -5 or 50)" />
                             <Button onClick={addTransaction}>Add Transaction</Button>
                         </div>
                         <Table>
-                            <TableHeader><TableRow><TableHead>Description</TableHead><TableHead>Amount</TableHead></TableRow></TableHeader>
+                            <TableHeader><TableRow><TableHead>Description</TableHead><TableHead>Amount</TableHead><TableHead className="text-right">Actions</TableHead></TableRow></TableHeader>
                             <TableBody>
                                 {transactions.map((t, i) => (
                                     <TableRow key={i}>
                                         <TableCell>{t.description}</TableCell>
                                         <TableCell className={t.amount > 0 ? 'text-green-500' : 'text-red-500'}>${t.amount.toFixed(2)}</TableCell>
+                                        <TableCell className="text-right">
+                                            <Button variant="ghost" size="icon" onClick={() => deleteTransaction(i)}>
+                                                <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                        </TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
@@ -303,19 +338,20 @@ export function TrackersView() {
                     </CardHeader>
                     <CardContent>
                         <Table>
-                             <TableHeader><TableRow><TableHead>Type</TableHead><TableHead>Title/Organization</TableHead><TableHead>Duration</TableHead><TableHead>Status</TableHead></TableRow></TableHeader>
+                             <TableHeader><TableRow><TableHead>Type</TableHead><TableHead>Title/Organization</TableHead><TableHead>Duration</TableHead><TableHead>Status</TableHead><TableHead className="text-right">Actions</TableHead></TableRow></TableHeader>
                              <TableBody>
                                 {experience.map((exp, index) => (
                                     <TableRow key={index}>
-                                        <TableCell><Input value={exp.type} onChange={e => { const newExp = [...experience]; newExp[index].type = e.target.value; setExperience(newExp); }} /></TableCell>
-                                        <TableCell><Input value={exp.title} onChange={e => { const newExp = [...experience]; newExp[index].title = e.target.value; setExperience(newExp); }} /></TableCell>
-                                        <TableCell><Input value={exp.duration} onChange={e => { const newExp = [...experience]; newExp[index].duration = e.target.value; setExperience(newExp); }} /></TableCell>
-                                        <TableCell><Input value={exp.status} onChange={e => { const newExp = [...experience]; newExp[index].status = e.target.value; setExperience(newExp); }} /></TableCell>
+                                        <TableCell><Input value={exp.type} onChange={e => handleExperienceChange(index, 'type', e.target.value)} /></TableCell>
+                                        <TableCell><Input value={exp.title} onChange={e => handleExperienceChange(index, 'title', e.target.value)} /></TableCell>
+                                        <TableCell><Input value={exp.duration} onChange={e => handleExperienceChange(index, 'duration', e.target.value)} /></TableCell>
+                                        <TableCell><Input value={exp.status} onChange={e => handleExperienceChange(index, 'status', e.target.value)} /></TableCell>
+                                        <TableCell className="text-right"><Button variant="ghost" size="icon" onClick={() => deleteExperience(index)}><Trash2 className="h-4 w-4" /></Button></TableCell>
                                     </TableRow>
                                 ))}
                              </TableBody>
                         </Table>
-                         <Button className="mt-4" onClick={addExperience}><PlusCircle/> Add New Entry</Button>
+                         <Button className="mt-4" onClick={addExperience}><PlusCircle className="mr-2 h-4 w-4"/> Add New Entry</Button>
                     </CardContent>
                 </Card>
             </TabsContent>
@@ -328,18 +364,19 @@ export function TrackersView() {
                     </CardHeader>
                     <CardContent>
                          <Table>
-                             <TableHeader><TableRow><TableHead>Activity</TableHead><TableHead>Role/Contribution</TableHead><TableHead>Date</TableHead></TableRow></TableHeader>
+                             <TableHeader><TableRow><TableHead>Activity</TableHead><TableHead>Role/Contribution</TableHead><TableHead>Date</TableHead><TableHead className="text-right">Actions</TableHead></TableRow></TableHeader>
                              <TableBody>
                                 {involvement.map((item, index) => (
                                     <TableRow key={index}>
-                                        <TableCell><Input value={item.activity} onChange={e => { const newInv = [...involvement]; newInv[index].activity = e.target.value; setInvolvement(newInv); }} /></TableCell>
-                                        <TableCell><Input value={item.contribution} onChange={e => { const newInv = [...involvement]; newInv[index].contribution = e.target.value; setInvolvement(newInv); }} /></TableCell>
-                                        <TableCell><Input value={item.date} onChange={e => { const newInv = [...involvement]; newInv[index].date = e.target.value; setInvolvement(newInv); }} /></TableCell>
+                                        <TableCell><Input value={item.activity} onChange={e => handleInvolvementChange(index, 'activity', e.target.value)} /></TableCell>
+                                        <TableCell><Input value={item.contribution} onChange={e => handleInvolvementChange(index, 'contribution', e.target.value)} /></TableCell>
+                                        <TableCell><Input value={item.date} onChange={e => handleInvolvementChange(index, 'date', e.target.value)} /></TableCell>
+                                        <TableCell className="text-right"><Button variant="ghost" size="icon" onClick={() => deleteInvolvement(index)}><Trash2 className="h-4 w-4" /></Button></TableCell>
                                     </TableRow>
                                 ))}
                              </TableBody>
                         </Table>
-                         <Button className="mt-4" onClick={addInvolvement}><PlusCircle/> Add Involvement</Button>
+                         <Button className="mt-4" onClick={addInvolvement}><PlusCircle className="mr-2 h-4 w-4"/> Add Involvement</Button>
                     </CardContent>
                 </Card>
             </TabsContent>
@@ -366,33 +403,33 @@ export function TrackersView() {
                     </CardHeader>
                     <CardContent>
                         <div className="grid md:grid-cols-3 gap-4">
-                            <div><h3 className="font-bold text-accent mb-2">Academic</h3>
-                                <ul>
-                                    {goals.filter(g => g.category === 'Academic').map((goal, index) => (
-                                        <li key={index} className="flex items-center gap-2">
-                                            <Checkbox checked={goal.done} onCheckedChange={() => toggleGoal(goals.indexOf(goal))}/> {goal.text}
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                             <div><h3 className="font-bold text-accent mb-2">Personal</h3>
-                                <ul>
-                                     {goals.filter(g => g.category === 'Personal').map((goal, index) => (
-                                        <li key={index} className="flex items-center gap-2">
-                                            <Checkbox checked={goal.done} onCheckedChange={() => toggleGoal(goals.indexOf(goal))}/> {goal.text}
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                             <div><h3 className="font-bold text-accent mb-2">Financial</h3>
-                                <ul>
-                                     {goals.filter(g => g.category === 'Financial').map((goal, index) => (
-                                        <li key={index} className="flex items-center gap-2">
-                                            <Checkbox checked={goal.done} onCheckedChange={() => toggleGoal(goals.indexOf(goal))}/> {goal.text}
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
+                            {(['Academic', 'Personal', 'Financial'] as const).map(category => (
+                                <div key={category}>
+                                    <h3 className="font-bold text-accent mb-2">{category}</h3>
+                                    <ul className="space-y-2">
+                                        {goals.filter(g => g.category === category).map((goal, index) => {
+                                            const originalIndex = goals.findIndex(g => g.text === goal.text && g.category === goal.category);
+                                            return (
+                                                <li key={originalIndex} className="flex items-center gap-2">
+                                                    <Checkbox checked={goal.done} onCheckedChange={() => toggleGoal(originalIndex)}/>
+                                                    <span className="flex-1">{goal.text}</span>
+                                                    <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => deleteGoal(originalIndex)}>
+                                                        <Trash2 className="h-4 w-4" />
+                                                    </Button>
+                                                </li>
+                                            );
+                                        })}
+                                    </ul>
+                                    <div className="mt-4 flex gap-2">
+                                        <Input 
+                                            placeholder={`New ${category} goal...`}
+                                            value={newGoal.category === category ? newGoal.text : ''}
+                                            onChange={e => setNewGoal({text: e.target.value, category})}
+                                        />
+                                        <Button onClick={() => addGoal(category)} size="icon"><PlusCircle className="h-4 w-4"/></Button>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </CardContent>
                 </Card>
