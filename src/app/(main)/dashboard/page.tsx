@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Star, GlassWater, Apple, Dumbbell, BookOpen, Sparkles, Smile, Heart, PlusCircle, Trash2 } from 'lucide-react';
+import { Star, GlassWater, Apple, Dumbbell, BookOpen, Sparkles, Smile, Heart, PlusCircle, Trash2, Upload, Trash } from 'lucide-react';
 import { useQuote } from '@/context/QuoteContext';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import Image from 'next/image';
 
 const initialReminders = [
     { id: 1, icon: GlassWater, text: "Drink Water", color: "text-blue-400" },
@@ -20,10 +21,25 @@ const initialReminders = [
 const iconComponents = [GlassWater, Apple, Dumbbell, BookOpen, Sparkles, Smile, Heart];
 const colorClasses = ["text-blue-400", "text-green-400", "text-red-400", "text-yellow-400", "text-pink-400", "text-indigo-400", "text-purple-400"];
 
+const VISION_BOARD_STORAGE_KEY = 'vision_board_image_v1';
+
 export default function DashboardPage() {
   const { selectedQuote } = useQuote();
   const [reminders, setReminders] = useState(initialReminders);
   const [newReminder, setNewReminder] = useState('');
+  const [visionBoardImage, setVisionBoardImage] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    try {
+      const savedImage = localStorage.getItem(VISION_BOARD_STORAGE_KEY);
+      if (savedImage) {
+        setVisionBoardImage(savedImage);
+      }
+    } catch (error) {
+      console.error("Failed to load vision board image from localStorage", error);
+    }
+  }, []);
 
   const addReminder = () => {
     if (newReminder.trim()) {
@@ -47,6 +63,36 @@ export default function DashboardPage() {
     setReminders(reminders.filter(r => r.id !== id));
   };
   
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result as string;
+        try {
+          localStorage.setItem(VISION_BOARD_STORAGE_KEY, base64String);
+          setVisionBoardImage(base64String);
+        } catch (error) {
+          console.error("Failed to save vision board image to localStorage", error);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const triggerImageUpload = () => {
+    fileInputRef.current?.click();
+  };
+
+  const removeImage = () => {
+    try {
+      localStorage.removeItem(VISION_BOARD_STORAGE_KEY);
+      setVisionBoardImage(null);
+    } catch (error) {
+      console.error("Failed to remove vision board image from localStorage", error);
+    }
+  };
+
   return (
     <div className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
       <div className="max-w-4xl">
@@ -73,8 +119,37 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
         <Card>
-            <CardContent className="p-2 aspect-video flex items-center justify-center relative group bg-muted/20">
-                <p className="text-muted-foreground">Vision Board</p>
+            <CardContent className="p-0 aspect-video flex items-center justify-center relative group bg-muted/20">
+              <input 
+                type="file"
+                ref={fileInputRef}
+                onChange={handleImageUpload}
+                accept="image/*"
+                className="hidden"
+              />
+              {visionBoardImage ? (
+                <>
+                  <Image src={visionBoardImage} alt="Vision Board" layout="fill" objectFit="cover" className="rounded-lg" />
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4 rounded-lg">
+                      <Button onClick={triggerImageUpload} variant="outline" size="icon">
+                        <Upload className="h-5 w-5"/>
+                      </Button>
+                      <Button onClick={removeImage} variant="destructive" size="icon">
+                        <Trash className="h-5 w-5"/>
+                      </Button>
+                  </div>
+                </>
+              ) : (
+                <div 
+                  className="text-center cursor-pointer flex flex-col items-center gap-2 text-muted-foreground"
+                  onClick={triggerImageUpload}
+                  data-ai-hint="vision board"
+                >
+                  <Upload className="h-8 w-8"/>
+                  <p className="font-bold">Vision Board</p>
+                  <p className="text-sm">Click to upload an image</p>
+                </div>
+              )}
             </CardContent>
         </Card>
       </div>
