@@ -17,7 +17,7 @@ const trackerSections = [
     { value: 'goals', label: 'Goal Tracker', icon: Target },
     { value: 'health', label: 'Health & Fitness', icon: HeartPulse },
     { value: 'cgpa', label: 'CGPA Tracker', icon: GraduationCap },
-    { value: 'coding', label: 'Coding Skills', icon: GitBranch },
+    { value: 'coding', label: 'Skills', icon: GitBranch },
     { value: 'finance', label: 'Finance Tracker', icon: DollarSign },
     { value: 'experience', label: 'Experience', icon: Briefcase },
     { value: 'events', label: 'Events & Orgs', icon: Trophy },
@@ -586,7 +586,7 @@ export function TrackersView() {
                 <TabsContent value="coding" className="mt-0">
                     <Card className="h-full">
                         <CardHeader>
-                            <CardTitle className="font-headline text-2xl text-primary">Coding Skill Tracker</CardTitle>
+                            <CardTitle className="font-headline text-2xl text-primary">Skills Tracker</CardTitle>
                             <CardDescription>Track your proficiency. Every line of code builds the empire.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
@@ -786,6 +786,8 @@ export function TrackersView() {
         </Tabs>
     );
 }
+
+    
 
     
 
