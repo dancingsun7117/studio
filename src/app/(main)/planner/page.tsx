@@ -35,7 +35,7 @@ interface DayData {
   todos: Todo[];
 }
 
-const SCHEDULE_STORAGE_KEY = 'planner_schedule_v1';
+const SCHEDULE_STORAGE_KEY = 'planner_schedule_v2';
 const MONTHLY_FOCUS_STORAGE_KEY = 'planner_monthly_focus_v1';
 const MONTHLY_BUDGET_STORAGE_KEY = 'planner_monthly_budget_v1';
 
@@ -156,11 +156,18 @@ export default function PlannerPage() {
     setMonthlyBudget(prev => ({ ...prev, [monthKey]: e.target.value }));
   };
 
-
   const updateScheduleForDay = (dayKey: string, newDayData: DayData) => {
-    setSchedule(prev => ({ ...prev, [dayKey]: newDayData }));
+    setSchedule(prev => {
+        const newSchedule = {...prev};
+        if (newDayData.events.length === 0 && newDayData.todos.length === 0) {
+            delete newSchedule[dayKey];
+        } else {
+            newSchedule[dayKey] = newDayData;
+        }
+        return newSchedule;
+    });
   };
-
+  
   const addEventToDate = (date: Date) => {
     if (!newEvent.title.trim()) return;
     const dayKey = getDayKey(date);
@@ -290,7 +297,7 @@ export default function PlannerPage() {
                 <CardContent>
                     <Input 
                         type="text"
-                        placeholder="e.g., $500" 
+                        placeholder="e.g., ₹40000" 
                         value={monthlyBudget[currentMonthKey] || ''}
                         onChange={handleMonthlyBudgetChange}
                     />
@@ -367,3 +374,5 @@ export default function PlannerPage() {
     </div>
   );
 }
+
+    

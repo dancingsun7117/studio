@@ -34,10 +34,10 @@ const initialHabits = [
 const initialSemesters = [...Array(8)].map(() => ({ sgpa: '', credits: '' }));
 
 const initialTransactions = [
-    { description: 'Scholarship', amount: 1000, type: 'income' as const },
-    { description: 'Freelance Project', amount: 200, type: 'income' as const },
-    { description: 'Textbooks', amount: -150, type: 'expense' as const },
-    { description: 'Coffee', amount: -50, type: 'expense' as const },
+    { description: 'Scholarship', amount: 80000, type: 'income' as const },
+    { description: 'Freelance Project', amount: 15000, type: 'income' as const },
+    { description: 'Textbooks', amount: -12000, type: 'expense' as const },
+    { description: 'Coffee', amount: -4000, type: 'expense' as const },
 ];
 
 const initialSkills = [
@@ -63,7 +63,7 @@ const initialInvolvement = [
 const initialGoals = [
     { category: 'Academic', text: 'Maintain 9+ CGPA', done: true },
     { category: 'Personal', text: 'Read 12 books this year', done: false },
-    { category: 'Financial', text: 'Save $5000 for post-grad trip', done: false }
+    { category: 'Financial', text: 'Save ₹4,00,000 for post-grad trip', done: false }
 ]
 
 const initialPlacementPrep = [
@@ -604,7 +604,7 @@ export function TrackersView() {
                                             onChange={(e) => handleSkillNameChange(index, e.target.value)}
                                             className="text-base font-semibold text-foreground p-0 h-auto border-none bg-transparent focus-visible:ring-0"
                                         />
-                                        <div className="flex-1 flex items-center gap-4">
+                                        <div className="flex items-center gap-4 flex-1">
                                             <input
                                                 type="range"
                                                 min="0"
@@ -635,9 +635,9 @@ export function TrackersView() {
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <Card className="bg-background/50"><CardHeader><CardTitle className="text-green-500">${totalIncome.toFixed(2)}</CardTitle><CardDescription>Total Income</CardDescription></CardHeader></Card>
-                            <Card className="bg-background/50"><CardHeader><CardTitle className="text-red-500">${Math.abs(totalExpenses).toFixed(2)}</CardTitle><CardDescription>Total Expenses</CardDescription></CardHeader></Card>
-                            <Card className="bg-primary/10 border-primary/50"><CardHeader><CardTitle className="text-primary">${(totalIncome + totalExpenses).toFixed(2)}</CardTitle><CardDescription>Net Balance</CardDescription></CardHeader></Card>
+                            <Card className="bg-background/50"><CardHeader><CardTitle className="text-green-500">₹{totalIncome.toFixed(2)}</CardTitle><CardDescription>Total Income</CardDescription></CardHeader></Card>
+                            <Card className="bg-background/50"><CardHeader><CardTitle className="text-red-500">₹{Math.abs(totalExpenses).toFixed(2)}</CardTitle><CardDescription>Total Expenses</CardDescription></CardHeader></Card>
+                            <Card className="bg-primary/10 border-primary/50"><CardHeader><CardTitle className="text-primary">₹{(totalIncome + totalExpenses).toFixed(2)}</CardTitle><CardDescription>Net Balance</CardDescription></CardHeader></Card>
                             </div>
                             <Card>
                                 <CardContent className="p-4 flex gap-2">
@@ -662,7 +662,7 @@ export function TrackersView() {
                                         {transactions.map((t, i) => (
                                             <TableRow key={i}>
                                                 <TableCell className="font-medium">{t.description}</TableCell>
-                                                <TableCell className={`text-right font-semibold ${t.amount > 0 ? 'text-green-600' : 'text-red-600'}`}>${t.amount.toFixed(2)}</TableCell>
+                                                <TableCell className={`text-right font-semibold ${t.amount > 0 ? 'text-green-600' : 'text-red-600'}`}>₹{t.amount.toFixed(2)}</TableCell>
                                                 <TableCell className="text-right">
                                                     <Button variant="ghost" size="icon" onClick={() => deleteTransaction(i)}>
                                                         <Trash2 className="h-4 w-4" />
@@ -787,6 +787,8 @@ export function TrackersView() {
         </Tabs>
     );
 }
+
+    
 
     
 
