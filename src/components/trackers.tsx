@@ -412,14 +412,14 @@ export function TrackersView() {
                     </Card>
                 </TabsContent>
                 
-                 <TabsContent value="health" className="mt-0">
+                <TabsContent value="health" className="mt-0">
                     <Card className="h-full">
                         <CardHeader>
                             <CardTitle className="font-headline text-2xl text-primary">Health, Fitness & Hygiene</CardTitle>
                             <CardDescription>A healthy mind in a healthy body. Track your wellness metrics.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-6">
-                            <div className="grid md:grid-cols-3 gap-6">
+                            <div className="grid md:grid-cols-3 gap-6 text-center">
                                 <Card>
                                     <CardHeader className="flex flex-row items-center justify-between pb-2">
                                         <CardTitle className="text-sm font-medium">Water Intake</CardTitle>
