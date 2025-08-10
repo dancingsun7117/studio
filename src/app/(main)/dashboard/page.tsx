@@ -1,5 +1,8 @@
+"use client";
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Crown, GitCommit, BrainCircuit } from 'lucide-react';
+import { Crown, GitCommit, BrainCircuit, Star } from 'lucide-react';
+import { useQuote } from '@/context/QuoteContext';
 
 const quotes = [
   {
@@ -17,6 +20,8 @@ const quotes = [
 ];
 
 export default function DashboardPage() {
+  const { selectedQuote } = useQuote();
+  
   return (
     <div className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
       <div className="max-w-4xl">
@@ -27,6 +32,21 @@ export default function DashboardPage() {
           This is your command center. Track your progress, plan your conquests, and build your empire, one line of code at a time.
         </p>
       </div>
+
+      <Card className="border-primary/50 bg-primary/10">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium font-body text-primary">
+            Chosen Affirmation
+          </CardTitle>
+          <Star className="h-5 w-5 text-primary" />
+        </CardHeader>
+        <CardContent>
+          <p className="font-headline text-2xl font-bold text-foreground">
+            &ldquo;{selectedQuote.text}&rdquo;
+          </p>
+        </CardContent>
+      </Card>
+
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {quotes.map((quote, index) => (
           <Card key={index} className="border-accent/30 bg-accent/10">

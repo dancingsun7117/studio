@@ -4,7 +4,8 @@ import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { PlusCircle, Trash2 } from 'lucide-react';
+import { PlusCircle, Trash2, Star } from 'lucide-react';
+import { useQuote } from '@/context/QuoteContext';
 
 const majorQuotes = [
   {
@@ -91,6 +92,7 @@ const initialAffirmations = [
 export default function MotivationPage() {
   const [affirmations, setAffirmations] = useState(initialAffirmations);
   const [newAffirmation, setNewAffirmation] = useState('');
+  const { selectedQuote, setSelectedQuote } = useQuote();
 
   const addAffirmation = () => {
     if (newAffirmation.trim()) {
@@ -109,6 +111,10 @@ export default function MotivationPage() {
     const updatedAffirmations = affirmations.filter((_, i) => i !== index);
     setAffirmations(updatedAffirmations);
   };
+  
+  const setFavorite = (quoteText: string) => {
+    setSelectedQuote({ text: quoteText });
+  };
 
   return (
     <div className="flex flex-1 flex-col gap-8 p-4 md:p-8">
@@ -117,13 +123,13 @@ export default function MotivationPage() {
           The Codex of Power
         </h1>
         <p className="mt-2 text-lg text-muted-foreground">
-          Words to fuel the empire you're building.
+          Words to fuel the empire you're building. Click the star to feature a quote on your dashboard.
         </p>
       </div>
       
       <div className="grid gap-8">
         {majorQuotes.map((q, index) => (
-          <Card key={index} className="border-accent/30 text-center">
+          <Card key={index} className="border-accent/30 text-center relative group">
             <CardContent className="p-8">
               <p className="font-headline text-3xl md:text-4xl text-foreground">
                 &ldquo;{q.quote}&rdquo;
@@ -132,6 +138,14 @@ export default function MotivationPage() {
                 - {q.author}
               </p>
             </CardContent>
+            <Button
+                variant="ghost"
+                size="icon"
+                className="absolute top-2 right-2 h-8 w-8 opacity-0 group-hover:opacity-100"
+                onClick={() => setFavorite(q.quote)}
+              >
+              <Star className={`h-5 w-5 ${selectedQuote.text === q.quote ? 'text-primary fill-primary' : ''}`} />
+            </Button>
           </Card>
         ))}
       </div>
@@ -159,14 +173,24 @@ export default function MotivationPage() {
                       onChange={(e) => handleAffirmationChange(index, e.target.value)}
                       className="bg-transparent border-none focus-visible:ring-1 focus-visible:ring-primary font-headline text-lg italic text-center w-full"
                   />
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100"
-                    onClick={() => deleteAffirmation(index)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                  <div className="absolute top-1 right-1 flex">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-6 w-6 opacity-0 group-hover:opacity-100"
+                      onClick={() => setFavorite(affirmation)}
+                    >
+                      <Star className={`h-4 w-4 ${selectedQuote.text === affirmation ? 'text-primary fill-primary' : ''}`} />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-6 w-6 opacity-0 group-hover:opacity-100"
+                      onClick={() => deleteAffirmation(index)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
               </div>
           ))}
         </div>
