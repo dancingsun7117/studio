@@ -464,7 +464,7 @@ export function TrackersView() {
                             <CardDescription>A healthy mind in a healthy body. Track your wellness metrics.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-6">
-                            <div className="grid md:grid-cols-3 gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <Card>
                                     <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
                                         <CardTitle className="text-sm font-medium">Water Intake</CardTitle>
@@ -476,7 +476,7 @@ export function TrackersView() {
                                     </CardContent>
                                 </Card>
                                 <Card>
-                                     <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+                                    <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
                                         <CardTitle className="text-sm font-medium">Sleep</CardTitle>
                                         <Bed className="h-4 w-4 text-muted-foreground" />
                                     </CardHeader>
@@ -485,7 +485,7 @@ export function TrackersView() {
                                         <Slider value={[healthData.sleep]} onValueChange={handleSleepChange} max={12} step={0.5} className="w-3/4" />
                                     </CardContent>
                                 </Card>
-                                 <Card>
+                                <Card>
                                     <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
                                         <CardTitle className="text-sm font-medium">Workouts</CardTitle>
                                         <Dumbbell className="h-4 w-4 text-muted-foreground" />
@@ -496,33 +496,34 @@ export function TrackersView() {
                                     </CardContent>
                                 </Card>
                             </div>
-                            <div className="grid md:grid-cols-2 gap-6">
-                                <div className="space-y-2">
+
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                <div className="space-y-4">
                                     <h3 className="font-headline text-lg text-accent">Workout Log</h3>
                                     <Card>
                                         <CardContent className="p-4 space-y-4">
-                                            <div className="flex gap-2">
-                                                <Input placeholder="Activity" value={newWorkout.activity} onChange={e => setNewWorkout({...newWorkout, activity: e.target.value})} />
-                                                <Input placeholder="Duration" className="w-28" value={newWorkout.duration} onChange={e => setNewWorkout({...newWorkout, duration: e.target.value})} />
-                                                <Input type="date" className="w-40" value={newWorkout.date} onChange={e => setNewWorkout({...newWorkout, date: e.target.value})} />
-                                                <Button onClick={addWorkout} size="icon"><PlusCircle className="h-4 w-4" /></Button>
+                                            <div className="flex flex-col sm:flex-row gap-2">
+                                                <Input placeholder="Activity" value={newWorkout.activity} onChange={e => setNewWorkout({...newWorkout, activity: e.target.value})} className="flex-grow" />
+                                                <Input placeholder="Duration" className="w-full sm:w-28" value={newWorkout.duration} onChange={e => setNewWorkout({...newWorkout, duration: e.target.value})} />
+                                                <Input type="date" className="w-full sm:w-40" value={newWorkout.date} onChange={e => setNewWorkout({...newWorkout, date: e.target.value})} />
+                                                <Button onClick={addWorkout} size="icon" className="w-full sm:w-10"><PlusCircle className="h-4 w-4" /></Button>
                                             </div>
                                             <div className="max-h-40 overflow-y-auto space-y-2 pr-2">
                                                 {healthData.workouts.map((w, i) => (
                                                     <div key={i} className="flex items-center gap-2 p-2 rounded-md bg-secondary/10 text-sm">
-                                                        <span className="font-semibold flex-1">{w.activity}</span>
-                                                        <span>{w.duration}</span>
-                                                        <span className="text-muted-foreground">{w.date}</span>
-                                                        <Button variant="ghost" size="icon" onClick={() => deleteWorkout(i)} className="h-6 w-6"><Trash2 className="h-4 w-4" /></Button>
+                                                        <span className="font-semibold flex-1 truncate">{w.activity}</span>
+                                                        <span className="whitespace-nowrap">{w.duration}</span>
+                                                        <span className="text-muted-foreground whitespace-nowrap">{w.date}</span>
+                                                        <Button variant="ghost" size="icon" onClick={() => deleteWorkout(i)} className="h-6 w-6 flex-shrink-0"><Trash2 className="h-4 w-4" /></Button>
                                                     </div>
                                                 ))}
                                             </div>
                                         </CardContent>
                                     </Card>
                                 </div>
-                                <div className="space-y-2">
+                                <div className="space-y-4">
                                     <h3 className="font-headline text-lg text-accent">Hygiene & Self-Care</h3>
-                                     <Card>
+                                    <Card>
                                         <CardContent className="p-4 space-y-4">
                                             <div className="flex gap-2">
                                                 <Input placeholder="New task..." value={newHygieneItem} onChange={e => setNewHygieneItem(e.target.value)} />
@@ -531,13 +532,13 @@ export function TrackersView() {
                                             <div className="max-h-40 overflow-y-auto space-y-2 pr-2">
                                                 {healthData.hygiene.map((h, i) => (
                                                     <div key={i} className="flex items-center gap-3 group">
-                                                         <Checkbox id={`hygiene-${i}`} checked={h.done} onCheckedChange={() => toggleHygiene(i)}/>
-                                                         <Input
+                                                        <Checkbox id={`hygiene-${i}`} checked={h.done} onCheckedChange={() => toggleHygiene(i)}/>
+                                                        <Input
                                                             value={h.text}
                                                             onChange={(e) => handleHygieneTextChange(i, e.target.value)}
                                                             className={`flex-1 p-0 h-auto border-none bg-transparent focus-visible:ring-0 ${h.done ? 'line-through text-muted-foreground' : ''}`}
                                                         />
-                                                         <Button variant="ghost" size="icon" onClick={() => deleteHygiene(i)} className="h-6 w-6 opacity-0 group-hover:opacity-100"><Trash2 className="h-4 w-4" /></Button>
+                                                        <Button variant="ghost" size="icon" onClick={() => deleteHygiene(i)} className="h-6 w-6 opacity-0 group-hover:opacity-100 flex-shrink-0"><Trash2 className="h-4 w-4" /></Button>
                                                     </div>
                                                 ))}
                                             </div>
