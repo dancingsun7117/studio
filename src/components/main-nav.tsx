@@ -1,3 +1,4 @@
+
 "use client";
 
 import { usePathname } from 'next/navigation';
@@ -10,6 +11,7 @@ import {
   Sparkles,
   Target,
   Lightbulb,
+  CalendarClock,
 } from 'lucide-react';
 
 import {
@@ -26,6 +28,7 @@ const navItems = [
   { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
   { href: '/trackers', icon: Target, label: 'Core Trackers' },
   { href: '/planner', icon: CalendarDays, label: 'Academic Planner' },
+  { href: '/timetable', icon: CalendarClock, label: 'Weekly Timetable' },
   { href: '/motivation', icon: Sparkles, label: 'Motivation' },
   { href: '/notes', icon: BookText, label: 'Notes' },
   { href: '/ideas', icon: Lightbulb, label: 'Ideas' },
