@@ -139,6 +139,7 @@ export function TrackersView() {
                 console.error(`Failed to parse ${key} from localStorage`, error);
             }
         });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
@@ -469,7 +470,7 @@ export function TrackersView() {
                                         <CardTitle className="text-sm font-medium">Water Intake</CardTitle>
                                         <GlassWater className="h-4 w-4 text-muted-foreground" />
                                     </CardHeader>
-                                    <CardContent className="flex flex-col items-center justify-center space-y-2">
+                                    <CardContent className="flex flex-col items-center justify-center space-y-2 pt-6">
                                         <div className="text-2xl font-bold">{healthData.water} glasses</div>
                                         <Slider value={[healthData.water]} onValueChange={handleWaterChange} max={16} step={1} className="w-3/4" />
                                     </CardContent>
@@ -479,7 +480,7 @@ export function TrackersView() {
                                         <CardTitle className="text-sm font-medium">Sleep</CardTitle>
                                         <Bed className="h-4 w-4 text-muted-foreground" />
                                     </CardHeader>
-                                    <CardContent className="flex flex-col items-center justify-center space-y-2">
+                                    <CardContent className="flex flex-col items-center justify-center space-y-2 pt-6">
                                         <div className="text-2xl font-bold">{healthData.sleep.toFixed(1)} hours</div>
                                         <Slider value={[healthData.sleep]} onValueChange={handleSleepChange} max={12} step={0.5} className="w-3/4" />
                                     </CardContent>
@@ -489,15 +490,15 @@ export function TrackersView() {
                                         <CardTitle className="text-sm font-medium">Workouts</CardTitle>
                                         <Dumbbell className="h-4 w-4 text-muted-foreground" />
                                     </CardHeader>
-                                    <CardContent className="flex flex-col items-center justify-center space-y-1">
+                                    <CardContent className="flex flex-col items-center justify-center space-y-1 pt-6">
                                         <div className="text-2xl font-bold">{healthData.workouts.length}</div>
                                         <p className="text-xs text-muted-foreground">sessions this week</p>
                                     </CardContent>
                                 </Card>
                             </div>
                             <div className="grid md:grid-cols-2 gap-6">
-                                <div>
-                                    <h3 className="font-headline text-lg text-accent mb-2">Workout Log</h3>
+                                <div className="space-y-2">
+                                    <h3 className="font-headline text-lg text-accent">Workout Log</h3>
                                     <Card>
                                         <CardContent className="p-4 space-y-4">
                                             <div className="flex gap-2">
@@ -519,8 +520,8 @@ export function TrackersView() {
                                         </CardContent>
                                     </Card>
                                 </div>
-                                <div>
-                                    <h3 className="font-headline text-lg text-accent mb-2">Hygiene & Self-Care</h3>
+                                <div className="space-y-2">
+                                    <h3 className="font-headline text-lg text-accent">Hygiene & Self-Care</h3>
                                      <Card>
                                         <CardContent className="p-4 space-y-4">
                                             <div className="flex gap-2">
