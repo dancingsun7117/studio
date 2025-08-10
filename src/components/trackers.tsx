@@ -5,7 +5,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Progress } from '@/components/ui/progress';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { CheckCircle, DollarSign, GitBranch, GraduationCap, Trophy, Users, Briefcase, Target, PlusCircle, Trash2 } from 'lucide-react';
@@ -38,9 +37,7 @@ const initialTransactions = [
     { description: 'Freelance Project', amount: 200, type: 'income' as const },
     { description: 'Textbooks', amount: -150, type: 'expense' as const },
     { description: 'Coffee', amount: -50, type: 'expense' as const },
-    { description: 'Pizza Night', amount: -100, type: 'expense' as const },
-    { description: 'Team Dinner', amount: -500, type: 'expense' as const },
-]
+];
 
 const initialSkills = [
     { name: 'Data Structures', value: 75 },
@@ -101,8 +98,7 @@ export function TrackersView() {
     }
 
     const deleteHabit = (habitIndex: number) => {
-        const newHabits = habits.filter((_, index) => index !== habitIndex);
-        setHabits(newHabits);
+        setHabits(habits.filter((_, index) => index !== habitIndex));
     }
 
     // State for CGPA Tracker
@@ -178,7 +174,7 @@ export function TrackersView() {
     const deleteExperience = (index: number) => setExperience(experience.filter((_, i) => i !== index));
     const handleExperienceChange = (index: number, field: keyof typeof experience[0], value: string) => {
         const newExperience = [...experience];
-        newExperience[index][field as keyof typeof experience[0]] = value;
+        (newExperience[index] as any)[field] = value;
         setExperience(newExperience);
     }
 
@@ -189,7 +185,7 @@ export function TrackersView() {
     const deleteInvolvement = (index: number) => setInvolvement(involvement.filter((_, i) => i !== index));
     const handleInvolvementChange = (index: number, field: keyof typeof involvement[0], value: string) => {
         const newInvolvement = [...involvement];
-        newInvolvement[index][field as keyof typeof involvement[0]] = value;
+        (newInvolvement[index] as any)[field] = value;
         setInvolvement(newInvolvement);
     }
 
@@ -249,351 +245,351 @@ export function TrackersView() {
 
 
     return (
-        <Tabs defaultValue="habits" className="w-full" orientation="vertical">
-            <TabsList className="w-full md:w-48 grid grid-cols-2 md:grid-cols-1 md:h-full">
+        <Tabs defaultValue="habits" className="w-full flex flex-col md:flex-row gap-6">
+            <TabsList className="w-full md:w-48 flex-col h-auto justify-start">
                 {trackerSections.map(section => (
-                    <TabsTrigger key={section.value} value={section.value} className="flex gap-2 justify-start p-4">
+                    <TabsTrigger key={section.value} value={section.value} className="w-full flex gap-2 justify-start p-4">
                         <section.icon className="h-5 w-5" /> <span className="hidden md:inline">{section.label}</span>
                     </TabsTrigger>
                 ))}
             </TabsList>
-
-            <TabsContent value="habits" className="mt-0 pt-0">
-                <Card className="h-full">
-                    <CardHeader>
-                        <CardTitle className="font-headline text-2xl text-primary">Weekly Habit Tracker</CardTitle>
-                        <CardDescription>Consistency is the key to mastery. Check off your habits daily.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                         <Card>
-                            <CardContent className="p-4 flex gap-2">
-                                <Input value={newHabit} onChange={e => setNewHabit(e.target.value)} placeholder="Add a new daily habit..." />
-                                <Button onClick={addHabit}><PlusCircle className="mr-2 h-4 w-4" />Add Habit</Button>
-                            </CardContent>
-                         </Card>
-                        <div className="rounded-md border">
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead className="w-[40%] font-bold">Habit</TableHead>
-                                        <TableHead className="text-center font-bold">M</TableHead>
-                                        <TableHead className="text-center font-bold">T</TableHead>
-                                        <TableHead className="text-center font-bold">W</TableHead>
-                                        <TableHead className="text-center font-bold">T</TableHead>
-                                        <TableHead className="text-center font-bold">F</TableHead>
-                                        <TableHead className="text-center font-bold">S</TableHead>
-                                        <TableHead className="text-center font-bold">S</TableHead>
-                                        <TableHead className="text-right"></TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {habits.map((habit, habitIndex) => (
-                                        <TableRow key={habitIndex}>
-                                            <TableCell>
-                                                <Input 
-                                                    value={habit.name} 
-                                                    onChange={(e) => handleHabitNameChange(habitIndex, e.target.value)}
-                                                    className="border-none bg-transparent p-0 h-auto focus-visible:ring-0"
-                                                />
-                                            </TableCell>
-                                            {habit.days.map((day, dayIndex) => (
-                                                <TableCell key={dayIndex} className="text-center">
-                                                    <Checkbox checked={day} onCheckedChange={() => toggleHabit(habitIndex, dayIndex)} />
+            <div className="flex-1">
+                <TabsContent value="habits" className="mt-0">
+                    <Card className="h-full">
+                        <CardHeader>
+                            <CardTitle className="font-headline text-2xl text-primary">Weekly Habit Tracker</CardTitle>
+                            <CardDescription>Consistency is the key to mastery. Check off your habits daily.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <Card>
+                                <CardContent className="p-4 flex gap-2">
+                                    <Input value={newHabit} onChange={e => setNewHabit(e.target.value)} placeholder="Add a new daily habit..." />
+                                    <Button onClick={addHabit}><PlusCircle className="mr-2 h-4 w-4" />Add Habit</Button>
+                                </CardContent>
+                            </Card>
+                            <div className="rounded-md border">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead className="w-[40%] font-bold">Habit</TableHead>
+                                            <TableHead className="text-center font-bold">M</TableHead>
+                                            <TableHead className="text-center font-bold">T</TableHead>
+                                            <TableHead className="text-center font-bold">W</TableHead>
+                                            <TableHead className="text-center font-bold">T</TableHead>
+                                            <TableHead className="text-center font-bold">F</TableHead>
+                                            <TableHead className="text-center font-bold">S</TableHead>
+                                            <TableHead className="text-center font-bold">S</TableHead>
+                                            <TableHead className="text-right"></TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {habits.map((habit, habitIndex) => (
+                                            <TableRow key={habitIndex}>
+                                                <TableCell>
+                                                    <Input 
+                                                        value={habit.name} 
+                                                        onChange={(e) => handleHabitNameChange(habitIndex, e.target.value)}
+                                                        className="border-none bg-transparent p-0 h-auto focus-visible:ring-0"
+                                                    />
                                                 </TableCell>
-                                            ))}
-                                            <TableCell className="text-right">
-                                                <Button variant="ghost" size="icon" onClick={() => deleteHabit(habitIndex)}>
-                                                    <Trash2 className="h-4 w-4" />
-                                                </Button>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </div>
-                    </CardContent>
-                </Card>
-            </TabsContent>
-            
-             <TabsContent value="goals" className="mt-0 pt-0">
-                <Card className="h-full">
-                    <CardHeader>
-                        <CardTitle className="font-headline text-2xl text-primary">Goal Tracker</CardTitle>
-                        <CardDescription>Set and conquer your academic, personal, and financial goals.</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="grid md:grid-cols-3 gap-6">
-                            {(['Academic', 'Personal', 'Financial'] as const).map(category => (
-                                <Card key={category} className="bg-background/50">
-                                    <CardHeader>
-                                      <CardTitle className="font-headline text-accent">{category} Goals</CardTitle>
-                                    </CardHeader>
-                                    <CardContent className="space-y-4">
-                                        <div className="flex gap-2">
-                                            <Input 
-                                                placeholder={`New ${category} goal...`}
-                                                value={newGoal.category === category ? newGoal.text : ''}
-                                                onChange={e => setNewGoal({text: e.target.value, category})}
-                                            />
-                                            <Button onClick={() => addGoal(category)} size="icon"><PlusCircle className="h-4 w-4"/></Button>
-                                        </div>
-                                        <div className="space-y-2">
-                                            {goals.filter(g => g.category === category).map((goal, index) => {
-                                                const originalIndex = goals.findIndex(g => g.text === goal.text && g.category === goal.category);
-                                                return (
-                                                    <div key={originalIndex} className="flex items-center gap-2 group">
-                                                        <Checkbox id={`goal-${originalIndex}`} checked={goal.done} onCheckedChange={() => toggleGoal(originalIndex)}/>
-                                                        <Input
-                                                          value={goal.text}
-                                                          onChange={(e) => handleGoalTextChange(originalIndex, e.target.value)}
-                                                          className={`flex-1 h-auto p-0 border-none bg-transparent focus-visible:ring-0 ${goal.done ? 'line-through text-muted-foreground' : ''}`}
-                                                        />
-                                                        <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100" onClick={() => deleteGoal(originalIndex)}>
-                                                            <Trash2 className="h-4 w-4" />
-                                                        </Button>
-                                                    </div>
-                                                );
-                                            })}
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                            ))}
-                        </div>
-                    </CardContent>
-                </Card>
-            </TabsContent>
+                                                {habit.days.map((day, dayIndex) => (
+                                                    <TableCell key={dayIndex} className="text-center">
+                                                        <Checkbox checked={day} onCheckedChange={() => toggleHabit(habitIndex, dayIndex)} />
+                                                    </TableCell>
+                                                ))}
+                                                <TableCell className="text-right">
+                                                    <Button variant="ghost" size="icon" onClick={() => deleteHabit(habitIndex)}>
+                                                        <Trash2 className="h-4 w-4" />
+                                                    </Button>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+                
+                <TabsContent value="goals" className="mt-0">
+                    <Card className="h-full">
+                        <CardHeader>
+                            <CardTitle className="font-headline text-2xl text-primary">Goal Tracker</CardTitle>
+                            <CardDescription>Set and conquer your academic, personal, and financial goals.</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="grid md:grid-cols-3 gap-6">
+                                {(['Academic', 'Personal', 'Financial'] as const).map(category => (
+                                    <Card key={category} className="bg-background/50">
+                                        <CardHeader>
+                                        <CardTitle className="font-headline text-accent">{category} Goals</CardTitle>
+                                        </CardHeader>
+                                        <CardContent className="space-y-4">
+                                            <div className="flex gap-2">
+                                                <Input 
+                                                    placeholder={`New ${category} goal...`}
+                                                    value={newGoal.category === category ? newGoal.text : ''}
+                                                    onChange={e => setNewGoal({text: e.target.value, category})}
+                                                />
+                                                <Button onClick={() => addGoal(category)} size="icon"><PlusCircle className="h-4 w-4"/></Button>
+                                            </div>
+                                            <div className="space-y-2">
+                                                {goals.filter(g => g.category === category).map((goal, index) => {
+                                                    const originalIndex = goals.findIndex(g => g.text === goal.text && g.category === goal.category);
+                                                    return (
+                                                        <div key={originalIndex} className="flex items-center gap-2 group">
+                                                            <Checkbox id={`goal-${originalIndex}`} checked={goal.done} onCheckedChange={() => toggleGoal(originalIndex)}/>
+                                                            <Input
+                                                            value={goal.text}
+                                                            onChange={(e) => handleGoalTextChange(originalIndex, e.target.value)}
+                                                            className={`flex-1 h-auto p-0 border-none bg-transparent focus-visible:ring-0 ${goal.done ? 'line-through text-muted-foreground' : ''}`}
+                                                            />
+                                                            <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100" onClick={() => deleteGoal(originalIndex)}>
+                                                                <Trash2 className="h-4 w-4" />
+                                                            </Button>
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                ))}
+                            </div>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
 
-            <TabsContent value="cgpa" className="mt-0 pt-0">
-                <Card className="h-full">
-                    <CardHeader>
-                        <CardTitle className="font-headline text-2xl text-primary">CGPA Tracker</CardTitle>
-                        <CardDescription>A perfect score isn&apos;t the goal. Dominance is.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
-                        <Card className="bg-background/50">
-                            <CardContent className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                               <div><label className="text-sm font-medium text-muted-foreground">Current CGPA</label><Input type="number" placeholder="8.5" value={cgpa.current} onChange={e => setCgpa({...cgpa, current: e.target.value})} className="text-lg font-bold"/></div>
-                               <div><label className="text-sm font-medium text-muted-foreground">Goal CGPA</label><Input type="number" placeholder="9.0+" value={cgpa.goal} onChange={e => setCgpa({...cgpa, goal: e.target.value})} className="text-lg font-bold"/></div>
-                            </CardContent>
-                        </Card>
-                        <div className="rounded-md border">
-                          <Table>
-                              <TableHeader><TableRow><TableHead className="font-bold">Semester</TableHead><TableHead className="font-bold">SGPA</TableHead><TableHead className="font-bold">Credits</TableHead></TableRow></TableHeader>
-                              <TableBody>
-                                  {semesters.map((sem, i) => (
-                                      <TableRow key={i}>
-                                          <TableCell className="font-semibold">Semester {i+1}</TableCell>
-                                          <TableCell><Input type="number" placeholder="-" value={sem.sgpa} onChange={e => handleSemesterChange(i, 'sgpa', e.target.value)} className="w-24"/></TableCell>
-                                          <TableCell><Input type="number" placeholder="-" value={sem.credits} onChange={e => handleSemesterChange(i, 'credits', e.target.value)} className="w-24" /></TableCell>
-                                      </TableRow>
-                                  ))}
-                              </TableBody>
-                          </Table>
-                        </div>
-                    </CardContent>
-                </Card>
-            </TabsContent>
-
-            <TabsContent value="coding" className="mt-0 pt-0">
-                 <Card className="h-full">
-                    <CardHeader>
-                        <CardTitle className="font-headline text-2xl text-primary">Coding Skill Tracker</CardTitle>
-                        <CardDescription>Track your proficiency. Every line of code builds the empire.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                         <Card>
-                            <CardContent className="p-4 flex gap-2">
-                                <Input value={newSkill.name} onChange={e => handleNewSkillChange('name', e.target.value)} placeholder="Add a new skill to master..." />
-                                <Input type="number" value={newSkill.value} onChange={e => handleNewSkillChange('value', e.target.value)} placeholder="%" className="w-24" />
-                                <Button onClick={addSkill}><PlusCircle className="mr-2 h-4 w-4" />Add Skill</Button>
-                            </CardContent>
-                         </Card>
-                         <div className="space-y-6 pt-4">
-                            {skills.map((skill, index) => (
-                                <div key={index} className="flex items-center gap-4 group">
-                                    <div className="w-40 pr-4">
-                                        <Input
-                                            value={skill.name}
-                                            onChange={(e) => handleSkillNameChange(index, e.target.value)}
-                                            className="text-base font-semibold text-foreground p-0 h-auto border-none bg-transparent focus-visible:ring-0"
-                                        />
-                                    </div>
-                                    <div className="flex-1">
-                                         <Slider
-                                            value={[skill.value]}
-                                            onValueChange={(value) => handleSkillChange(index, value)}
-                                            max={100}
-                                            step={1}
-                                        />
-                                    </div>
-                                    <span className="text-sm font-medium text-primary w-12 text-right">{skill.value}%</span>
-                                    <Button variant="ghost" size="icon" onClick={() => deleteSkill(index)} className="opacity-0 group-hover:opacity-100">
-                                        <Trash2 className="h-4 w-4" />
-                                    </Button>
-                                </div>
-                            ))}
-                         </div>
-                    </CardContent>
-                </Card>
-            </TabsContent>
-
-            <TabsContent value="finance" className="mt-0 pt-0">
-                <Card className="h-full">
-                    <CardHeader>
-                        <CardTitle className="font-headline text-2xl text-primary">Finance Tracker</CardTitle>
-                        <CardDescription>Money is power. Manage it like a don.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                           <Card className="bg-background/50"><CardHeader><CardTitle className="text-green-500">${totalIncome.toFixed(2)}</CardTitle><CardDescription>Total Income</CardDescription></CardHeader></Card>
-                           <Card className="bg-background/50"><CardHeader><CardTitle className="text-red-500">${Math.abs(totalExpenses).toFixed(2)}</CardTitle><CardDescription>Total Expenses</CardDescription></CardHeader></Card>
-                           <Card className="bg-primary/10 border-primary/50"><CardHeader><CardTitle className="text-primary">${(totalIncome + totalExpenses).toFixed(2)}</CardTitle><CardDescription>Net Balance</CardDescription></CardHeader></Card>
-                        </div>
-                         <Card>
-                            <CardContent className="p-4 flex gap-2">
-                                <Input value={newTransaction.description} onChange={e => handleTransactionChange('description', e.target.value)} placeholder="Description" />
-                                <Input type="number" value={newTransaction.amount} onChange={e => handleTransactionChange('amount', e.target.value)} placeholder="Amount" className="w-32" />
-                                 <Select value={newTransaction.type} onValueChange={(value) => handleTransactionChange('type', value as 'income' | 'expense')}>
-                                    <SelectTrigger className="w-32">
-                                        <SelectValue placeholder="Type" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="income">Income</SelectItem>
-                                        <SelectItem value="expense">Expense</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                                <Button onClick={addTransaction}><PlusCircle className="mr-2 h-4 w-4"/>Add</Button>
-                            </CardContent>
-                         </Card>
-                         <div className="rounded-md border">
+                <TabsContent value="cgpa" className="mt-0">
+                    <Card className="h-full">
+                        <CardHeader>
+                            <CardTitle className="font-headline text-2xl text-primary">CGPA Tracker</CardTitle>
+                            <CardDescription>A perfect score isn&apos;t the goal. Dominance is.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            <Card className="bg-background/50">
+                                <CardContent className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div><label className="text-sm font-medium text-muted-foreground">Current CGPA</label><Input type="number" placeholder="8.5" value={cgpa.current} onChange={e => setCgpa({...cgpa, current: e.target.value})} className="text-lg font-bold"/></div>
+                                <div><label className="text-sm font-medium text-muted-foreground">Goal CGPA</label><Input type="number" placeholder="9.0+" value={cgpa.goal} onChange={e => setCgpa({...cgpa, goal: e.target.value})} className="text-lg font-bold"/></div>
+                                </CardContent>
+                            </Card>
+                            <div className="rounded-md border">
                             <Table>
-                                <TableHeader><TableRow><TableHead className="font-bold">Description</TableHead><TableHead className="font-bold text-right">Amount</TableHead><TableHead className="w-12"></TableHead></TableRow></TableHeader>
+                                <TableHeader><TableRow><TableHead className="font-bold">Semester</TableHead><TableHead className="font-bold">SGPA</TableHead><TableHead className="font-bold">Credits</TableHead></TableRow></TableHeader>
                                 <TableBody>
-                                    {transactions.map((t, i) => (
+                                    {semesters.map((sem, i) => (
                                         <TableRow key={i}>
-                                            <TableCell className="font-medium">{t.description}</TableCell>
-                                            <TableCell className={`text-right font-semibold ${t.amount > 0 ? 'text-green-600' : 'text-red-600'}`}>${t.amount.toFixed(2)}</TableCell>
-                                            <TableCell className="text-right">
-                                                <Button variant="ghost" size="icon" onClick={() => deleteTransaction(i)}>
-                                                    <Trash2 className="h-4 w-4" />
-                                                </Button>
-                                            </TableCell>
+                                            <TableCell className="font-semibold">Semester {i+1}</TableCell>
+                                            <TableCell><Input type="number" placeholder="-" value={sem.sgpa} onChange={e => handleSemesterChange(i, 'sgpa', e.target.value)} className="w-24"/></TableCell>
+                                            <TableCell><Input type="number" placeholder="-" value={sem.credits} onChange={e => handleSemesterChange(i, 'credits', e.target.value)} className="w-24" /></TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>
                             </Table>
-                         </div>
-                    </CardContent>
-                </Card>
-            </TabsContent>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
 
-            <TabsContent value="experience" className="mt-0 pt-0">
-                 <Card className="h-full">
-                    <CardHeader>
-                        <CardTitle className="font-headline text-2xl text-primary">Experience Tracker</CardTitle>
-                        <CardDescription>Log internships, projects, and research. Every victory counts.</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="rounded-md border">
-                            <Table>
-                                 <TableHeader><TableRow><TableHead className="font-bold w-32">Type</TableHead><TableHead className="font-bold">Title/Organization</TableHead><TableHead className="font-bold w-48">Duration</TableHead><TableHead className="font-bold w-40">Status</TableHead><TableHead className="w-12"></TableHead></TableRow></TableHeader>
-                                 <TableBody>
-                                    {experience.map((exp, index) => (
-                                        <TableRow key={index}>
-                                            <TableCell>
-                                                <Select value={exp.type} onValueChange={(value) => handleExperienceChange(index, 'type', value)}>
-                                                    <SelectTrigger><SelectValue/></SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectItem value="Internship">Internship</SelectItem>
-                                                        <SelectItem value="Project">Project</SelectItem>
-                                                        <SelectItem value="Research">Research</SelectItem>
-                                                        <SelectItem value="Volunteer">Volunteer</SelectItem>
-                                                    </SelectContent>
-                                                </Select>
-                                            </TableCell>
-                                            <TableCell><Input value={exp.title} onChange={e => handleExperienceChange(index, 'title', e.target.value)} /></TableCell>
-                                            <TableCell><Input value={exp.duration} onChange={e => handleExperienceChange(index, 'duration', e.target.value)} /></TableCell>
-                                            <TableCell>
-                                                <Select value={exp.status} onValueChange={(value) => handleExperienceChange(index, 'status', value)}>
-                                                    <SelectTrigger><SelectValue/></SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectItem value="Completed">Completed</SelectItem>
-                                                        <SelectItem value="In Progress">In Progress</SelectItem>
-                                                        <SelectItem value="Ongoing">Ongoing</SelectItem>
-                                                        <SelectItem value="Planned">Planned</SelectItem>
-                                                    </SelectContent>
-                                                </Select>
-                                            </TableCell>
-                                            <TableCell className="text-right"><Button variant="ghost" size="icon" onClick={() => deleteExperience(index)}><Trash2 className="h-4 w-4" /></Button></TableCell>
-                                        </TableRow>
-                                    ))}
-                                 </TableBody>
-                            </Table>
-                        </div>
-                         <Button className="mt-4" onClick={addExperience}><PlusCircle className="mr-2 h-4 w-4"/> Add Experience</Button>
-                    </CardContent>
-                </Card>
-            </TabsContent>
+                <TabsContent value="coding" className="mt-0">
+                    <Card className="h-full">
+                        <CardHeader>
+                            <CardTitle className="font-headline text-2xl text-primary">Coding Skill Tracker</CardTitle>
+                            <CardDescription>Track your proficiency. Every line of code builds the empire.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <Card>
+                                <CardContent className="p-4 flex gap-2">
+                                    <Input value={newSkill.name} onChange={e => handleNewSkillChange('name', e.target.value)} placeholder="Add a new skill to master..." />
+                                    <Input type="number" value={newSkill.value} onChange={e => handleNewSkillChange('value', e.target.value)} placeholder="%" className="w-24" />
+                                    <Button onClick={addSkill}><PlusCircle className="mr-2 h-4 w-4" />Add Skill</Button>
+                                </CardContent>
+                            </Card>
+                            <div className="space-y-6 pt-4">
+                                {skills.map((skill, index) => (
+                                    <div key={index} className="flex items-center gap-4 group">
+                                        <div className="w-40 pr-4">
+                                            <Input
+                                                value={skill.name}
+                                                onChange={(e) => handleSkillNameChange(index, e.target.value)}
+                                                className="text-base font-semibold text-foreground p-0 h-auto border-none bg-transparent focus-visible:ring-0"
+                                            />
+                                        </div>
+                                        <div className="flex-1">
+                                            <Slider
+                                                value={[skill.value]}
+                                                onValueChange={(value) => handleSkillChange(index, value)}
+                                                max={100}
+                                                step={1}
+                                            />
+                                        </div>
+                                        <span className="text-sm font-medium text-primary w-12 text-right">{skill.value}%</span>
+                                        <Button variant="ghost" size="icon" onClick={() => deleteSkill(index)} className="opacity-0 group-hover:opacity-100">
+                                            <Trash2 className="h-4 w-4" />
+                                        </Button>
+                                    </div>
+                                ))}
+                            </div>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
 
-            <TabsContent value="events" className="mt-0 pt-0">
-                 <Card className="h-full">
-                    <CardHeader>
-                        <CardTitle className="font-headline text-2xl text-primary">Involvement Tracker</CardTitle>
-                        <CardDescription>Track events, hackathons, and clubs. Build your network.</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                         <div className="rounded-md border">
-                            <Table>
-                                 <TableHeader><TableRow><TableHead className="font-bold">Activity/Club</TableHead><TableHead className="font-bold">Role/Contribution</TableHead><TableHead className="font-bold w-40">Date</TableHead><TableHead className="w-12"></TableHead></TableRow></TableHeader>
-                                 <TableBody>
-                                    {involvement.map((item, index) => (
-                                        <TableRow key={index}>
-                                            <TableCell><Input value={item.activity} onChange={e => handleInvolvementChange(index, 'activity', e.target.value)} className="font-semibold"/></TableCell>
-                                            <TableCell><Input value={item.contribution} onChange={e => handleInvolvementChange(index, 'contribution', e.target.value)} /></TableCell>
-                                            <TableCell><Input value={item.date} onChange={e => handleInvolvementChange(index, 'date', e.target.value)} /></TableCell>
-                                            <TableCell className="text-right"><Button variant="ghost" size="icon" onClick={() => deleteInvolvement(index)}><Trash2 className="h-4 w-4" /></Button></TableCell>
-                                        </TableRow>
-                                    ))}
-                                 </TableBody>
-                            </Table>
-                         </div>
-                         <Button className="mt-4" onClick={addInvolvement}><PlusCircle className="mr-2 h-4 w-4"/> Add Involvement</Button>
-                    </CardContent>
-                </Card>
-            </TabsContent>
+                <TabsContent value="finance" className="mt-0">
+                    <Card className="h-full">
+                        <CardHeader>
+                            <CardTitle className="font-headline text-2xl text-primary">Finance Tracker</CardTitle>
+                            <CardDescription>Money is power. Manage it like a don.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <Card className="bg-background/50"><CardHeader><CardTitle className="text-green-500">${totalIncome.toFixed(2)}</CardTitle><CardDescription>Total Income</CardDescription></CardHeader></Card>
+                            <Card className="bg-background/50"><CardHeader><CardTitle className="text-red-500">${Math.abs(totalExpenses).toFixed(2)}</CardTitle><CardDescription>Total Expenses</CardDescription></CardHeader></Card>
+                            <Card className="bg-primary/10 border-primary/50"><CardHeader><CardTitle className="text-primary">${(totalIncome + totalExpenses).toFixed(2)}</CardTitle><CardDescription>Net Balance</CardDescription></CardHeader></Card>
+                            </div>
+                            <Card>
+                                <CardContent className="p-4 flex gap-2">
+                                    <Input value={newTransaction.description} onChange={e => handleTransactionChange('description', e.target.value)} placeholder="Description" />
+                                    <Input type="number" value={newTransaction.amount} onChange={e => handleTransactionChange('amount', e.target.value)} placeholder="Amount" className="w-32" />
+                                    <Select value={newTransaction.type} onValueChange={(value) => handleTransactionChange('type', value as 'income' | 'expense')}>
+                                        <SelectTrigger className="w-32">
+                                            <SelectValue placeholder="Type" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="income">Income</SelectItem>
+                                            <SelectItem value="expense">Expense</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                    <Button onClick={addTransaction}><PlusCircle className="mr-2 h-4 w-4"/>Add</Button>
+                                </CardContent>
+                            </Card>
+                            <div className="rounded-md border">
+                                <Table>
+                                    <TableHeader><TableRow><TableHead className="font-bold">Description</TableHead><TableHead className="font-bold text-right">Amount</TableHead><TableHead className="w-12"></TableHead></TableRow></TableHeader>
+                                    <TableBody>
+                                        {transactions.map((t, i) => (
+                                            <TableRow key={i}>
+                                                <TableCell className="font-medium">{t.description}</TableCell>
+                                                <TableCell className={`text-right font-semibold ${t.amount > 0 ? 'text-green-600' : 'text-red-600'}`}>${t.amount.toFixed(2)}</TableCell>
+                                                <TableCell className="text-right">
+                                                    <Button variant="ghost" size="icon" onClick={() => deleteTransaction(i)}>
+                                                        <Trash2 className="h-4 w-4" />
+                                                    </Button>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
 
-            <TabsContent value="placement" className="mt-0 pt-0">
-                 <Card className="h-full">
-                    <CardHeader>
-                        <CardTitle className="font-headline text-2xl text-primary">Placement Readiness</CardTitle>
-                        <CardDescription>Your personalized checklist for total domination.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <Card>
-                            <CardContent className="p-4 flex gap-2">
-                                <Input value={newPrepItem} onChange={e => setNewPrepItem(e.target.value)} placeholder="Add a new checklist item..." />
-                                <Button onClick={addPlacementPrepItem}><PlusCircle className="mr-2 h-4 w-4" />Add Item</Button>
-                            </CardContent>
-                        </Card>
-                        <div className="space-y-3 pt-2">
-                            {placementPrep.map((item, index) => (
-                                <div key={index} className="flex items-center gap-3 group">
-                                    <Checkbox id={`prep-${index}`} checked={item.done} onCheckedChange={() => togglePlacementPrep(index)} />
-                                    <Input
-                                        value={item.text}
-                                        onChange={(e) => handlePlacementPrepChange(index, e.target.value)}
-                                        className={`p-0 h-auto border-none bg-transparent focus-visible:ring-0 ${item.done ? 'line-through text-muted-foreground' : ''}`}
-                                    />
-                                     <Button variant="ghost" size="icon" onClick={() => deletePlacementPrepItem(index)} className="h-6 w-6 opacity-0 group-hover:opacity-100">
-                                        <Trash2 className="h-4 w-4" />
-                                    </Button>
-                                </div>
-                            ))}
-                        </div>
-                    </CardContent>
-                </Card>
-            </TabsContent>
+                <TabsContent value="experience" className="mt-0">
+                    <Card className="h-full">
+                        <CardHeader>
+                            <CardTitle className="font-headline text-2xl text-primary">Experience Tracker</CardTitle>
+                            <CardDescription>Log internships, projects, and research. Every victory counts.</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="rounded-md border">
+                                <Table>
+                                    <TableHeader><TableRow><TableHead className="font-bold w-32">Type</TableHead><TableHead className="font-bold">Title/Organization</TableHead><TableHead className="font-bold w-48">Duration</TableHead><TableHead className="font-bold w-40">Status</TableHead><TableHead className="w-12"></TableHead></TableRow></TableHeader>
+                                    <TableBody>
+                                        {experience.map((exp, index) => (
+                                            <TableRow key={index}>
+                                                <TableCell>
+                                                    <Select value={exp.type} onValueChange={(value) => handleExperienceChange(index, 'type', value)}>
+                                                        <SelectTrigger><SelectValue/></SelectTrigger>
+                                                        <SelectContent>
+                                                            <SelectItem value="Internship">Internship</SelectItem>
+                                                            <SelectItem value="Project">Project</SelectItem>
+                                                            <SelectItem value="Research">Research</SelectItem>
+                                                            <SelectItem value="Volunteer">Volunteer</SelectItem>
+                                                        </SelectContent>
+                                                    </Select>
+                                                </TableCell>
+                                                <TableCell><Input value={exp.title} onChange={e => handleExperienceChange(index, 'title', e.target.value)} /></TableCell>
+                                                <TableCell><Input value={exp.duration} onChange={e => handleExperienceChange(index, 'duration', e.target.value)} /></TableCell>
+                                                <TableCell>
+                                                    <Select value={exp.status} onValueChange={(value) => handleExperienceChange(index, 'status', value)}>
+                                                        <SelectTrigger><SelectValue/></SelectTrigger>
+                                                        <SelectContent>
+                                                            <SelectItem value="Completed">Completed</SelectItem>
+                                                            <SelectItem value="In Progress">In Progress</SelectItem>
+                                                            <SelectItem value="Ongoing">Ongoing</SelectItem>
+                                                            <SelectItem value="Planned">Planned</SelectItem>
+                                                        </SelectContent>
+                                                    </Select>
+                                                </TableCell>
+                                                <TableCell className="text-right"><Button variant="ghost" size="icon" onClick={() => deleteExperience(index)}><Trash2 className="h-4 w-4" /></Button></TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </div>
+                            <Button className="mt-4" onClick={addExperience}><PlusCircle className="mr-2 h-4 w-4"/> Add Experience</Button>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
 
+                <TabsContent value="events" className="mt-0">
+                    <Card className="h-full">
+                        <CardHeader>
+                            <CardTitle className="font-headline text-2xl text-primary">Involvement Tracker</CardTitle>
+                            <CardDescription>Track events, hackathons, and clubs. Build your network.</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="rounded-md border">
+                                <Table>
+                                    <TableHeader><TableRow><TableHead className="font-bold">Activity/Club</TableHead><TableHead className="font-bold">Role/Contribution</TableHead><TableHead className="font-bold w-40">Date</TableHead><TableHead className="w-12"></TableHead></TableRow></TableHeader>
+                                    <TableBody>
+                                        {involvement.map((item, index) => (
+                                            <TableRow key={index}>
+                                                <TableCell><Input value={item.activity} onChange={e => handleInvolvementChange(index, 'activity', e.target.value)} className="font-semibold"/></TableCell>
+                                                <TableCell><Input value={item.contribution} onChange={e => handleInvolvementChange(index, 'contribution', e.target.value)} /></TableCell>
+                                                <TableCell><Input value={item.date} onChange={e => handleInvolvementChange(index, 'date', e.target.value)} /></TableCell>
+                                                <TableCell className="text-right"><Button variant="ghost" size="icon" onClick={() => deleteInvolvement(index)}><Trash2 className="h-4 w-4" /></Button></TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </div>
+                            <Button className="mt-4" onClick={addInvolvement}><PlusCircle className="mr-2 h-4 w-4"/> Add Involvement</Button>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+
+                <TabsContent value="placement" className="mt-0">
+                    <Card className="h-full">
+                        <CardHeader>
+                            <CardTitle className="font-headline text-2xl text-primary">Placement Readiness</CardTitle>
+                            <CardDescription>Your personalized checklist for total domination.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <Card>
+                                <CardContent className="p-4 flex gap-2">
+                                    <Input value={newPrepItem} onChange={e => setNewPrepItem(e.target.value)} placeholder="Add a new checklist item..." />
+                                    <Button onClick={addPlacementPrepItem}><PlusCircle className="mr-2 h-4 w-4" />Add Item</Button>
+                                </CardContent>
+                            </Card>
+                            <div className="space-y-3 pt-2">
+                                {placementPrep.map((item, index) => (
+                                    <div key={index} className="flex items-center gap-3 group">
+                                        <Checkbox id={`prep-${index}`} checked={item.done} onCheckedChange={() => togglePlacementPrep(index)} />
+                                        <Input
+                                            value={item.text}
+                                            onChange={(e) => handlePlacementPrepChange(index, e.target.value)}
+                                            className={`p-0 h-auto border-none bg-transparent focus-visible:ring-0 ${item.done ? 'line-through text-muted-foreground' : ''}`}
+                                        />
+                                        <Button variant="ghost" size="icon" onClick={() => deletePlacementPrepItem(index)} className="h-6 w-6 opacity-0 group-hover:opacity-100">
+                                            <Trash2 className="h-4 w-4" />
+                                        </Button>
+                                    </div>
+                                ))}
+                            </div>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+            </div>
         </Tabs>
     );
 }
