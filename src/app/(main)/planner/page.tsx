@@ -162,7 +162,7 @@ export default function PlannerPage() {
   };
 
   const addEventToDate = (date: Date) => {
-    if (!newEvent.title) return;
+    if (!newEvent.title.trim()) return;
     const dayKey = getDayKey(date);
     const dayData = schedule[dayKey] || { events: [], todos: [] };
     const updatedDayData = {
@@ -171,7 +171,7 @@ export default function PlannerPage() {
     };
     updateScheduleForDay(dayKey, updatedDayData);
     setNewEvent({ title: '', time: '' });
-  }
+  };
 
   const addEventToSchedule = () => {
     if (!selectedDate) return;
@@ -185,7 +185,7 @@ export default function PlannerPage() {
   };
   
   const addTodoToSchedule = () => {
-    if (!selectedDate || !newTodo) return;
+    if (!selectedDate || !newTodo.trim()) return;
     const dayKey = getDayKey(selectedDate);
     const dayData = schedule[dayKey] || { events: [], todos: [] };
     const updatedDayData = {
@@ -201,6 +201,7 @@ export default function PlannerPage() {
     const dayKey = getDayKey(selectedDate);
     const dayData = schedule[dayKey];
     if(!dayData) return;
+    
     const updatedTodos = [...dayData.todos];
     updatedTodos[todoIndex].done = !updatedTodos[todoIndex].done;
     updateScheduleForDay(dayKey, { ...dayData, todos: updatedTodos });
@@ -211,6 +212,7 @@ export default function PlannerPage() {
     const dayKey = getDayKey(selectedDate);
     const dayData = schedule[dayKey];
     if(!dayData) return;
+
     const updatedEvents = dayData.events.filter((_, i) => i !== eventIndex);
     updateScheduleForDay(dayKey, { ...dayData, events: updatedEvents });
   };
@@ -220,6 +222,7 @@ export default function PlannerPage() {
     const dayKey = getDayKey(selectedDate);
     const dayData = schedule[dayKey];
     if(!dayData) return;
+    
     const updatedTodos = dayData.todos.filter((_, i) => i !== todoIndex);
     updateScheduleForDay(dayKey, { ...dayData, todos: updatedTodos });
   };
