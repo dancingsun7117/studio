@@ -2,11 +2,12 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Star, GlassWater, Apple, Dumbbell, BookOpen, Sparkles, Smile, Heart, PlusCircle, Trash2, Upload, Trash } from 'lucide-react';
+import { Star, GlassWater, Apple, Dumbbell, BookOpen, Sparkles, Smile, Heart, PlusCircle, Trash2, Upload, Trash, HeartHandshake } from 'lucide-react';
 import { useQuote } from '@/context/QuoteContext';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
+import { Textarea } from '@/components/ui/textarea';
 
 const initialReminders = [
     { id: 1, icon: GlassWater, text: "Drink Water", color: "text-blue-400" },
@@ -22,12 +23,14 @@ const iconComponents = [GlassWater, Apple, Dumbbell, BookOpen, Sparkles, Smile, 
 const colorClasses = ["text-blue-400", "text-green-400", "text-red-400", "text-yellow-400", "text-pink-400", "text-indigo-400", "text-purple-400"];
 
 const VISION_BOARD_STORAGE_KEY = 'vision_board_image_v1';
+const GRATITUDE_STORAGE_KEY = 'gratitude_text_v1';
 
 export default function DashboardPage() {
   const { selectedQuote } = useQuote();
   const [reminders, setReminders] = useState(initialReminders);
   const [newReminder, setNewReminder] = useState('');
   const [visionBoardImage, setVisionBoardImage] = useState<string | null>(null);
+  const [gratitudeText, setGratitudeText] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -36,10 +39,22 @@ export default function DashboardPage() {
       if (savedImage) {
         setVisionBoardImage(savedImage);
       }
+      const savedGratitude = localStorage.getItem(GRATITUDE_STORAGE_KEY);
+      if (savedGratitude) {
+        setGratitudeText(savedGratitude);
+      }
     } catch (error) {
-      console.error("Failed to load vision board image from localStorage", error);
+      console.error("Failed to load data from localStorage", error);
     }
   }, []);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(GRATITUDE_STORAGE_KEY, gratitudeText);
+    } catch (error) {
+      console.error("Failed to save gratitude text to localStorage", error);
+    }
+  }, [gratitudeText]);
 
   const addReminder = () => {
     if (newReminder.trim()) {
@@ -153,6 +168,37 @@ export default function DashboardPage() {
             </CardContent>
         </Card>
       </div>
+      
+      <div className="grid gap-4 md:grid-cols-2">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium font-body text-primary">
+                Daily Gratitude
+              </CardTitle>
+              <HeartHandshake className="h-5 w-5 text-primary" />
+            </CardHeader>
+            <CardContent>
+              <Textarea
+                placeholder="Today I am grateful for..."
+                className="bg-transparent border-none focus-visible:ring-0 text-base resize-none"
+                rows={5}
+                value={gratitudeText}
+                onChange={(e) => setGratitudeText(e.target.value)}
+              />
+            </CardContent>
+          </Card>
+           <Card>
+            <CardHeader>
+              <CardTitle className="font-headline text-lg text-primary">Personal Mission</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <blockquote className="border-l-4 border-primary pl-4 italic text-foreground/80">
+                “In a world full of noise, she codes in silence and conquers in power.”
+              </blockquote>
+            </CardContent>
+          </Card>
+      </div>
+
 
       <div>
         <h2 className="font-headline text-2xl font-bold text-primary mb-4">Daily Reminders</h2>
@@ -192,17 +238,8 @@ export default function DashboardPage() {
             ))}
         </div>
       </div>
-
-       <Card className="mt-4">
-        <CardHeader>
-          <CardTitle className="font-headline text-2xl text-primary">Personal Mission</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <blockquote className="border-l-4 border-primary pl-4 italic text-foreground/80">
-            “In a world full of noise, she codes in silence and conquers in power.”
-          </blockquote>
-        </CardContent>
-      </Card>
     </div>
   );
 }
+
+    
