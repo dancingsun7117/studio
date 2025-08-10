@@ -600,7 +600,7 @@ export function TrackersView() {
                             <div className="space-y-6 pt-4">
                                 {skills.map((skill, index) => (
                                     <div key={index} className="flex items-center gap-4 group">
-                                        <div className="w-40 pr-4">
+                                        <div className="w-40">
                                             <Input
                                                 value={skill.name}
                                                 onChange={(e) => handleSkillNameChange(index, e.target.value)}
