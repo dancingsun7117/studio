@@ -4,115 +4,75 @@
 
 @layer base {
   :root {
-    /* Base Tones */
-    --background: 40 33% 97%; /* Ivory */
-    --foreground: 345 50% 15%; /* Dark Burgundy/Black */
-
-    /* Card & Popover */
-    --card: 350 45% 96%; /* Light Dusty Rose */
-    --card-foreground: 345 50% 15%;
-    
-    --popover: 40 33% 98%; /* Lighter Ivory */
-    --popover-foreground: 345 50% 15%;
-    
-    /* Primary (Antique Gold) */
-    --primary: 46 51% 44%; /* HEX: #B58C2B, RGBA: rgba(181, 140, 43, 1) */
-    --primary-foreground: 46 51% 10%;
-    
-    /* Secondary (Burgundy) */
-    --secondary: 345 45% 40%; /* HEX: #9F3446, RGBA: rgba(159, 52, 70, 1) */
-    --secondary-foreground: 0 0% 98%;
-    
-    /* Muted (Dusty Rose Tones) */
-    --muted: 350 30% 88%;
-    --muted-foreground: 350 15% 45%;
-    
-    /* Accent (Charcoal) */
-    --accent: 220 13% 30%; /* HEX: #424652, RGBA: rgba(66, 70, 82, 1) */
-    --accent-foreground: 0 0% 98%;
-    
-    /* Destructive */
-    --destructive: 0 63% 31%;
-    --destructive-foreground: 0 0% 98%;
-    
-    /* Border & Input */
-    --border: 350 20% 85%;
-    --input: 350 20% 85%;
-    --ring: 46 51% 44%; /* Antique Gold for rings */
-
-    /* Chart Colors */
-    --chart-1: 46 51% 44%;   /* Antique Gold */
-    --chart-2: 345 45% 50%;  /* Burgundy */
-    --chart-3: 220 13% 40%;  /* Charcoal */
-    --chart-4: 350 40% 65%;  /* Dusty Rose */
-    --chart-5: 46 51% 64%;   /* Lighter Gold */
-    
-    --radius: 0.5rem;
-
-    /* Sidebar (Rich Black/Charcoal) */
-    --sidebar-background: 240 10% 12%; /* HEX: #1B1C20, RGBA: rgba(27, 28, 32, 1) */
-    --sidebar-foreground: 40 33% 97%; /* Ivory */
-    --sidebar-primary: 46 51% 44%; /* Antique Gold */
-    --sidebar-primary-foreground: 46 51% 10%;
-    --sidebar-accent: 345 45% 40%; /* Burgundy */
-    --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 240 10% 20%;
-    --sidebar-ring: 46 51% 44%;
-  }
-
-  .dark {
-    /* Base Tones (Dark) */
-    --background: 220 13% 12%; /* Rich Black/Charcoal */
-    --foreground: 40 33% 97%; /* Ivory */
-
-    /* Card & Popover (Dark) */
-    --card: 220 13% 18%; /* Slightly lighter Charcoal */
+    --background: 220 13% 9%;
+    --foreground: 40 33% 97%;
+    --card: 220 13% 12%;
     --card-foreground: 40 33% 97%;
-    
-    --popover: 220 13% 10%;
+    --popover: 220 13% 12%;
     --popover-foreground: 40 33% 97%;
-    
-    /* Primary (Antique Gold) - Consistent */
-    --primary: 46 51% 54%; /* Brighter Gold for contrast */
+    --primary: 46 99% 50%;
     --primary-foreground: 46 51% 10%;
-    
-    /* Secondary (Burgundy) - Consistent */
-    --secondary: 345 45% 50%;
+    --secondary: 345 83% 47%;
     --secondary-foreground: 0 0% 98%;
-    
-    /* Muted (Dark) */
     --muted: 220 13% 25%;
     --muted-foreground: 220 13% 65%;
-    
-    /* Accent (Antique Gold) */
-    --accent: 46 51% 44%;
+    --accent: 46 99% 50%;
     --accent-foreground: 46 51% 10%;
-    
-    /* Destructive */
     --destructive: 0 63% 41%;
     --destructive-foreground: 0 0% 98%;
-    
-    /* Border & Input (Dark) */
     --border: 220 13% 28%;
     --input: 220 13% 28%;
-    --ring: 46 51% 54%; /* Brighter Gold for rings */
-
-    /* Chart Colors - Consistent */
-    --chart-1: 46 51% 44%;
-    --chart-2: 345 45% 50%;
+    --ring: 46 99% 50%;
+    --radius: 0.5rem;
+    --chart-1: 46 99% 50%;
+    --chart-2: 345 83% 47%;
     --chart-3: 220 13% 40%;
     --chart-4: 350 40% 65%;
     --chart-5: 46 51% 64%;
-
-    /* Sidebar (Rich Black/Charcoal) - Consistent */
     --sidebar-background: 240 10% 12%;
     --sidebar-foreground: 40 33% 97%;
-    --sidebar-primary: 46 51% 54%;
+    --sidebar-primary: 46 99% 50%;
     --sidebar-primary-foreground: 46 51% 10%;
-    --sidebar-accent: 345 45% 40%;
+    --sidebar-accent: 345 83% 47%;
     --sidebar-accent-foreground: 0 0% 98%;
     --sidebar-border: 240 10% 20%;
-    --sidebar-ring: 46 51% 54%;
+    --sidebar-ring: 46 99% 50%;
+  }
+
+  .dark {
+    --background: 220 13% 9%;
+    --foreground: 40 33% 97%;
+    --card: 220 13% 12%;
+    --card-foreground: 40 33% 97%;
+    --popover: 220 13% 12%;
+    --popover-foreground: 40 33% 97%;
+    --primary: 46 99% 50%;
+    --primary-foreground: 46 51% 10%;
+    --secondary: 345 83% 47%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 220 13% 25%;
+    --muted-foreground: 220 13% 65%;
+    --accent: 46 99% 50%;
+    --accent-foreground: 46 51% 10%;
+    --destructive: 0 63% 41%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 220 13% 28%;
+    --input: 220 13% 28%;
+    --ring: 46 99% 50%;
+    --radius: 0.5rem;
+    --chart-1: 46 99% 50%;
+    --chart-2: 345 83% 47%;
+    --chart-3: 220 13% 40%;
+    --chart-4: 350 40% 65%;
+    --chart-5: 46 51% 64%;
+    --sidebar-background: 240 10% 12%;
+    --sidebar-foreground: 40 33% 97%;
+    --sidebar-primary: 46 99% 50%;
+    --sidebar-primary-foreground: 46 51% 10%;
+    --sidebar-accent: 345 83% 47%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 240 10% 20%;
+    --sidebar-ring: 46 99% 50%;
   }
 }
 
@@ -122,32 +82,5 @@
   }
   body {
     @apply bg-background text-foreground;
-    /* You can add your sticker URLs here, separated by commas */
-    /* Example: url('YOUR_STICKER_URL_1'), url('YOUR_STICKER_URL_2'), ... */
-    background-image: 
-      url('https://placehold.co/200x200.png'), /* Replace with your sticker URL */
-      url('https://placehold.co/150x150.png'), /* Replace with your sticker URL */
-      linear-gradient(160deg, hsl(40 33% 97% / 0.95), hsl(350 45% 96% / 0.95) 40%, hsl(345 45% 80% / 0.5) 85%);
-    background-repeat: no-repeat, no-repeat, no-repeat;
-    /* You can adjust the position of each sticker here */
-    background-position: top 10% left 5%, bottom 10% right 5%, center;
-    background-size: 200px, 150px, cover; /* Adjust size as needed */
-    background-attachment: fixed;
-  }
-  .bg-card {
-    @apply bg-card/80 backdrop-blur-sm;
-  }
-  /* Gradient Definitions for key components */
-  .bg-primary {
-    /* CSS Gradient: Antique Gold */
-    background-image: linear-gradient(to right, hsl(46 51% 44%), hsl(46 51% 34%));
-  }
-  .bg-secondary {
-    /* CSS Gradient: Burgundy */
-    background-image: linear-gradient(to right, hsl(345 45% 40%), hsl(345 45% 30%));
-  }
-  .bg-accent {
-     /* CSS Gradient: Charcoal */
-    background-image: linear-gradient(to right, hsl(220 13% 30%), hsl(220 13% 20%));
   }
 }
