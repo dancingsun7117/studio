@@ -5,11 +5,11 @@
 @layer base {
   :root {
     --background: 34 50% 95%; /* Ivory */
-    --foreground: 340 10% 10%; /* Rich Black/Charcoal */
+    --foreground: 240 5% 10%; /* Rich Black/Charcoal */
     --card: 345 30% 97%; /* Lighter dusty rose/ivory blend */
-    --card-foreground: 340 10% 10%;
+    --card-foreground: 240 5% 10%;
     --popover: 34 50% 95%;
-    --popover-foreground: 340 10% 10%;
+    --popover-foreground: 240 5% 10%;
 
     --primary: 40 40% 45%; /* Antique Gold */
     --primary-foreground: 40 10% 98%;
@@ -18,10 +18,10 @@
     --secondary-foreground: 0 0% 98%;
     
     --muted: 345 20% 88%; /* Dusty Rose lightened */
-    --muted-foreground: 340 10% 30%; /* Charcoal Gray */
+    --muted-foreground: 240 10% 30%; /* Charcoal Gray */
 
     --accent: 40 50% 65%; /* Lighter Antique Gold for hover */
-    --accent-foreground: 340 10% 10%;
+    --accent-foreground: 240 5% 10%;
 
     --destructive: 0 63% 41%;
     --destructive-foreground: 0 0% 98%;
