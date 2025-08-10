@@ -7,7 +7,7 @@ import { Star, GlassWater, Apple, Dumbbell, BookOpen, Sparkles, Smile, Heart, Pl
 import { useQuote } from '@/context/QuoteContext';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import Image from 'next/image';
+import NextImage from 'next/image';
 import { Textarea } from '@/components/ui/textarea';
 
 const initialReminders = [
@@ -159,7 +159,7 @@ export default function DashboardPage() {
               />
               {visionBoardImage ? (
                 <>
-                  <Image src={visionBoardImage} alt="Vision Board" layout="fill" objectFit="cover" className="rounded-lg" />
+                  <NextImage src={visionBoardImage} alt="Vision Board" layout="fill" objectFit="cover" className="rounded-lg" />
                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4 rounded-lg">
                       <Button onClick={triggerImageUpload} variant="outline" size="icon">
                         <Upload className="h-5 w-5"/>

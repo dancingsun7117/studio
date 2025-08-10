@@ -9,7 +9,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Slider } from '@/components/ui/slider';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
-import Image from 'next/image';
+import NextImage from 'next/image';
 
 const NOTES_PAGES_STORAGE_KEY = 'notes_pages_v3';
 
@@ -346,7 +346,7 @@ export default function NotesPage() {
                     />
                     {activePage.image ? (
                         <>
-                            <Image src={activePage.image} alt="Note mood board" layout="fill" objectFit="cover" className="rounded-lg" />
+                            <NextImage src={activePage.image} alt="Note mood board" layout="fill" objectFit="cover" className="rounded-lg" />
                             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4 rounded-lg">
                                 <Button onClick={triggerImageUpload} variant="outline" size="icon" title="Change Image">
                                     <Upload className="h-5 w-5"/>
@@ -411,3 +411,4 @@ export default function NotesPage() {
     </div>
   );
 }
+
