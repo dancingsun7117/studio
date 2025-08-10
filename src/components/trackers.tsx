@@ -211,7 +211,7 @@ export function TrackersView() {
     const totalExpenses = transactions.filter(t => t.amount < 0).reduce((sum, t) => sum + t.amount, 0);
 
 
-    // State for Coding Skills
+    // State for Skills
     const handleSkillChange = (index: number, value: number[]) => {
         const newSkills = [...skills];
         newSkills[index].value = isNaN(value[0]) ? 0 : Math.min(100, Math.max(0, value[0]));
@@ -600,22 +600,21 @@ export function TrackersView() {
                             <div className="space-y-6 pt-4">
                                 {skills.map((skill, index) => (
                                     <div key={index} className="flex items-center gap-4 group">
-                                        <div className="w-40">
-                                            <Input
-                                                value={skill.name}
-                                                onChange={(e) => handleSkillNameChange(index, e.target.value)}
-                                                className="text-base font-semibold text-foreground p-0 h-auto border-none bg-transparent focus-visible:ring-0"
-                                            />
-                                        </div>
-                                        <div className="flex-1">
+                                        <Input
+                                            value={skill.name}
+                                            onChange={(e) => handleSkillNameChange(index, e.target.value)}
+                                            className="w-40 text-base font-semibold text-foreground p-0 h-auto border-none bg-transparent focus-visible:ring-0"
+                                        />
+                                        <div className="flex-1 flex items-center gap-4">
                                             <Slider
                                                 value={[skill.value]}
                                                 onValueChange={(value) => handleSkillChange(index, value)}
                                                 max={100}
                                                 step={1}
+                                                className="flex-1"
                                             />
+                                            <span className="text-sm font-medium text-primary w-12 text-right">{skill.value}%</span>
                                         </div>
-                                        <span className="text-sm font-medium text-primary w-12 text-right">{skill.value}%</span>
                                         <Button variant="ghost" size="icon" onClick={() => deleteSkill(index)} className="opacity-0 group-hover:opacity-100">
                                             <Trash2 className="h-4 w-4" />
                                         </Button>
