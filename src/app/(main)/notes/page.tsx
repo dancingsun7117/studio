@@ -10,6 +10,7 @@ import { Slider } from '@/components/ui/slider';
 import { Input } from '@/components/ui/input';
 
 const NOTES_STORAGE_KEY = 'notes_content_v1';
+const MOODBOARD_DRAWING_STORAGE_KEY = 'moodboard_drawing_v1';
 
 export default function NotesPage() {
   const [notes, setNotes] = useState('');
@@ -45,10 +46,10 @@ export default function NotesPage() {
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (canvas) {
+    if (canvas && isClient) {
       const context = canvas.getContext('2d');
       if (context) {
-        const savedDrawing = localStorage.getItem('moodboard_drawing_v1');
+        const savedDrawing = localStorage.getItem(MOODBOARD_DRAWING_STORAGE_KEY);
         if (savedDrawing) {
           const image = new Image();
           image.onload = () => {
@@ -110,7 +111,7 @@ export default function NotesPage() {
     setIsDrawing(false);
     const dataUrl = canvas.toDataURL();
     saveToHistory(dataUrl);
-    localStorage.setItem('moodboard_drawing_v1', dataUrl);
+    localStorage.setItem(MOODBOARD_DRAWING_STORAGE_KEY, dataUrl);
   };
   
   const clearCanvas = () => {
@@ -121,7 +122,7 @@ export default function NotesPage() {
       context.clearRect(0, 0, canvas.width, canvas.height);
       const dataUrl = canvas.toDataURL();
       saveToHistory(dataUrl);
-      localStorage.setItem('moodboard_drawing_v1', dataUrl);
+      localStorage.setItem(MOODBOARD_DRAWING_STORAGE_KEY, dataUrl);
     }
   };
 
@@ -136,7 +137,7 @@ export default function NotesPage() {
         image.onload = () => {
             context.clearRect(0, 0, canvas.width, canvas.height);
             context.drawImage(image, 0, 0);
-            localStorage.setItem('moodboard_drawing_v1', image.src);
+            localStorage.setItem(MOODBOARD_DRAWING_STORAGE_KEY, image.src);
         };
         image.src = history[newIndex];
       }
@@ -154,7 +155,7 @@ export default function NotesPage() {
         image.onload = () => {
             context.clearRect(0, 0, canvas.width, canvas.height);
             context.drawImage(image, 0, 0);
-            localStorage.setItem('moodboard_drawing_v1', image.src);
+            localStorage.setItem(MOODBOARD_DRAWING_STORAGE_KEY, image.src);
         };
         image.src = history[newIndex];
       }
