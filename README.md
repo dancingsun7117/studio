@@ -239,10 +239,10 @@ It is intended to become a personal operating system for the journey from **2025
 
 Future improvements can include:
 
-* [x] Authentication and personalized accounts
+* [ ] Authentication and personalized accounts
 * [ ] Persistent cloud data
 * [ ] Advanced progress analytics
-* [ ] Habit tracking
+* [X] Habit tracking
 * [ ] Calendar integration
 * [ ] Notifications and reminders
 * [ ] Dark/light theme customization
