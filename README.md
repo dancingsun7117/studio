@@ -1,6 +1,4 @@
-Yes — for the GitHub repository, I’d replace the default **“Firebase Studio” README** with a proper project README that explains the planner, its features, design, and tech stack. The deployed app identifies itself as **Planner 25–29** and covers 2025–2029. ([Studio 7335][1])
 
-### README.md
 
 # ✦ Planner 25–29
 
